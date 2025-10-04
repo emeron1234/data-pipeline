@@ -1,0 +1,127 @@
+name: QA Validation Job
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+        description: Deployment environment
+      space:
+        type: string
+        required: true
+        description: Space
+      object_type:
+        type: string
+        required: true
+        description: Object Type
+      job_type:
+        type: string
+        required: true
+        description: Job type
+      test_type:
+        type: string
+        required: true
+        description: Test type
+      deploy:
+        type: boolean
+        required: true
+        description: Deploy a workflow before launching it
+      skip_test:
+        type: boolean
+        description: Skip test
+      deployment_file:
+        type: string
+        required: true
+        description: File deployment
+    secrets:
+      DATABRICKS_HOST:
+        required: true
+      DATABRICKS_TOKEN:
+        required: true
+      GH_TOKEN:
+        required: true
+      ES_ENDPOINT:
+        required: true
+      PG_USERNAME:
+        required: true
+      PG_HOST:
+        required: true
+      PG_PASSWORD:
+        required: true
+      PG_JDBC_DRIVER:
+        required: true
+      JIRA_CLIENT_ID:
+        required: true
+      JIRA_CLIENT_SECRET:
+        required: true
+      SODA_CLOUD_API_KEY:
+       required: true
+      SODA_CLOUD_API_SECRET:
+       required: true
+
+jobs:
+  qa-deploy-config:
+    environment: ${{ inputs.environment }}_${{ inputs.space }}
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      ES_ENDPOINT: ${{ secrets.ES_ENDPOINT }}
+      PG_USERNAME: ${{ secrets.PG_USERNAME }}
+      PG_HOST: ${{ secrets.PG_HOST }}
+      PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+      PG_JDBC_DRIVER: ${{ secrets.PG_JDBC_DRIVER }}
+      JIRA_CLIENT_ID: ${{ secrets.JIRA_CLIENT_ID }}
+      JIRA_CLIENT_SECRET: ${{ secrets.JIRA_CLIENT_SECRET }}
+      SODA_CLOUD_API_KEY: ${{ secrets.SODA_CLOUD_API_KEY }}
+      SODA_CLOUD_API_SECRET: ${{ secrets.SODA_CLOUD_API_SECRET }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -e ".[dev]"
+      - name: Upload configuration file
+        run: |
+          databricks fs cp --overwrite we/pipeline/core/config/we_pipeline_config_${{ inputs.environment }}.json dbfs:/FileStore/configuration/we_pipeline_config_${{ inputs.environment }}.json
+          databricks secrets put --scope we-pipeline-scope --key ES_ENDPOINT --string-value ${{ secrets.ES_ENDPOINT }}
+          databricks secrets put --scope we-pipeline-scope --key PG_USERNAME --string-value ${{ secrets.PG_USERNAME }}
+          databricks secrets put --scope we-pipeline-scope --key PG_HOST --string-value ${{ secrets.PG_HOST }}
+          databricks secrets put --scope we-pipeline-scope --key PG_PASSWORD --string-value ${{ secrets.PG_PASSWORD }}
+          databricks secrets put --scope we-pipeline-scope --key PG_JDBC_DRIVER --string-value ${{ secrets.PG_JDBC_DRIVER }}
+          databricks secrets put --scope we-pipeline-scope --key JIRA_CLIENT_ID --string-value ${{ secrets.JIRA_CLIENT_ID }}
+          databricks secrets put --scope we-pipeline-scope --key JIRA_CLIENT_SECRET --string-value ${{ secrets.JIRA_CLIENT_SECRET }}
+          databricks secrets put --scope we-pipeline-scope --key SODA_CLOUD_API_KEY --string-value ${{ secrets.SODA_CLOUD_API_KEY }}
+          databricks secrets put --scope we-pipeline-scope --key SODA_CLOUD_API_SECRET --string-value ${{ secrets.SODA_CLOUD_API_SECRET }}
+
+      - name: Deploy Integration test suite other than ddp
+        if: ${{ inputs.job_type != 'ddp' }}
+        run: |
+          dbx deploy --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --deployment-file=${{ inputs.deployment_file }} --environment ${{ inputs.environment }}_${{ inputs.space }} --debug
+
+      - name: Deploy Integration test suite ddp
+        if: ${{ inputs.job_type == 'ddp' }}
+        run: |
+          dbx deploy --job=ddp-val-wf --deployment-file=${{ inputs.deployment_file }} --environment ${{ inputs.environment }}_${{ inputs.space }} --debug
+
+      - name: Run Integration test suite for cross_platform_count
+        if: ${{ inputs.job_type == 'cross_platform_count' }}
+        run: |
+            dbx launch --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --trace --environment ${{ inputs.environment }}_${{ inputs.space }} --parameters='{"python_params": ["we.pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'", "--test_type", "'${{ inputs.test_type }}'"]}'
+
+      # - name: Run Integration test suite other than ddp
+      #   if: ${{ inputs.job_type != 'ddp' }}
+      #   run: |
+      #       dbx launch --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --trace --environment ${{ inputs.environment }}_${{ inputs.space }} --parameters='{"python_params": ["we.pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'"]}'
+
+      # - name: Run Integration test suite ddp
+      #   if: ${{ inputs.job_type == 'ddp' && inputs.environment != 'prod' }}
+      #   run: |
+      #       dbx launch --job=ddp-val-wf --trace --environment ${{ inputs.environment }}_${{ inputs.space }} --parameters='{"python_params": ["we.pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'"]}'
