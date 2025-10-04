@@ -39,26 +39,7 @@ on:
         required: true
       DATABRICKS_TOKEN:
         required: true
-      GH_TOKEN:
-        required: true
-      ES_ENDPOINT:
-        required: true
-      PG_USERNAME:
-        required: true
-      PG_HOST:
-        required: true
-      PG_PASSWORD:
-        required: true
-      PG_JDBC_DRIVER:
-        required: true
-      JIRA_CLIENT_ID:
-        required: true
-      JIRA_CLIENT_SECRET:
-        required: true
-      SODA_CLOUD_API_KEY:
-       required: true
-      SODA_CLOUD_API_SECRET:
-       required: true
+
 
 jobs:
   qa-deploy-config:
@@ -67,16 +48,6 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      ES_ENDPOINT: ${{ secrets.ES_ENDPOINT }}
-      PG_USERNAME: ${{ secrets.PG_USERNAME }}
-      PG_HOST: ${{ secrets.PG_HOST }}
-      PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
-      PG_JDBC_DRIVER: ${{ secrets.PG_JDBC_DRIVER }}
-      JIRA_CLIENT_ID: ${{ secrets.JIRA_CLIENT_ID }}
-      JIRA_CLIENT_SECRET: ${{ secrets.JIRA_CLIENT_SECRET }}
-      SODA_CLOUD_API_KEY: ${{ secrets.SODA_CLOUD_API_KEY }}
-      SODA_CLOUD_API_SECRET: ${{ secrets.SODA_CLOUD_API_SECRET }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
