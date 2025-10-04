@@ -1,0 +1,66 @@
+# Custom section is used to store configurations that might be repetative.
+# Please read YAML documentation for details on how to use substitutions and anchors.
+custom:
+  basic-cluster: &basic-cluster
+    new_cluster:
+      spark_version: "13.3.x-scala2.12"
+      policy_id: "000AC0102CFB0F36"
+      autoscale:
+        min_workers: 4
+        max_workers: 8
+      node_type_id: "i3.2xlarge"
+      data_security_mode: "SINGLE_USER"
+      spark_conf:
+        spark.databricks.adaptive.autoOptimizeShuffle.enabled: "true"
+        spark.databricks.unityCatalog.userIsolation.python.preview: "true"
+        spark.cleaner.referenceTracking.cleanCheckpoints: "true"
+        spark.hadoop.fs.s3a.multipart.size: 104857600
+        spark.databricks.python.defaultPythonRepl: "pythonshell"
+
+  acl: &acl
+    access_control_list:
+      - service_principal_name: "98901d96-1aac-476a-a41f-08ebc08cb6af"
+        permission_level: "IS_OWNER"
+      - group_name: "SG-Altrata-Databricks-Development-Admin"
+        permission_level: "CAN_MANAGE"
+      - group_name: "SG-Altrata-Databricks-Development-Users"
+        permission_level: "CAN_MANAGE_RUN"
+
+environments:
+  dev_synthetic:
+    workflows:
+      - name: "we-pipeline-rep-smoke-dev-synthetic-val-v1"
+        <<: *acl
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *basic-cluster
+        tasks:
+          - task_key: "rep_dev_synthetic_validation_task"
+            job_cluster_key: "default"
+            spark_python_task:
+              python_file: "file://main.py"
+              parameters: [ "we.pipeline.validation.task.rep_val", "--env", "dev", "--space", "synthetic", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+            email_notifications:
+              on_success:
+              - jerry.siow@altrata.com
+              - abdulhaziq.matlan@altrata.com
+              on_failure:
+              - jerry.siow@altrata.com
+              - abdulhaziq.matlan@altrata.com
+              
+          - task_key: "rep_dev_synthetic_validation_task_silver"
+            job_cluster_key: "default"
+            spark_python_task:
+              python_file: "file://main.py"
+              parameters: [ "we.pipeline.validation.task.rep_val", "--env", "dev", "--space", "synthetic", "--zone", "silver", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+            depends_on:
+              - task_key: "rep_dev_synthetic_validation_task"
+            tags:
+              "alt:subcomponent": "rep_dev_synthetic_validation_task_silver"
+            email_notifications:
+              on_success:
+              - jerry.siow@altrata.com
+              - abdulhaziq.matlan@altrata.com
+              on_failure:
+              - jerry.siow@altrata.com
+              - abdulhaziq.matlan@altrata.com
