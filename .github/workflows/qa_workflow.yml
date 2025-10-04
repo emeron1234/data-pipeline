@@ -1,0 +1,95 @@
+name: QA Validation Workflow Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options:
+          - dev
+          - test
+          - prod
+        description: Deployment environment
+        required: true
+      space:
+        type: choice
+        options:
+          - feature
+          - qa
+          - synthetic
+          - actual
+          - release
+        description: Space
+        required: true
+      object_type:
+        type: choice
+        description: Object type
+        options:
+          - all
+          - aa
+          - ci
+          - don
+          - it
+          - oa
+          - pos
+          - re
+          - ri
+          - am
+          - property
+          - loan
+          - pam
+          - pnm
+          - aip
+          - none
+        default: all
+        required: false
+      job_type:
+        type: choice
+        description: Job type
+        options:
+          - onetime
+          - delta
+          - rep
+          - cip
+          - cdp
+          - rip
+          - fdp
+          - pop
+          - pip
+          - ddp
+          - unresolved_record
+          - npcp
+          - soda_dq
+          - aipp
+          - cross_platform_count
+          - do_housekeeping
+        default: onetime
+        required: true
+      test_type:
+        type: choice
+        description: Test type
+        options:
+          - smoke
+          - regression
+        default: smoke
+        required: true
+      deploy:
+        type: boolean
+        description: Deploy a workflow before launching it?
+        default: true
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  qa-workflow-deploy-and-launch:
+    uses: ./.github/workflows/qa_val.yml
+    with:
+      environment: ${{ inputs.environment }}
+      space: ${{ inputs.space }}
+      object_type: ${{ inputs.object_type }}
+      job_type: ${{ inputs.job_type }}
+      test_type: ${{ inputs.test_type }}
+      deploy: ${{ inputs.deploy }}
+      deployment_file: ./deployment_conf/validation/${{ inputs.job_type }}_${{ inputs.test_type }}_deployment_${{ inputs.environment }}_${{ inputs.space }}_val.yml
+    secrets: inherit
