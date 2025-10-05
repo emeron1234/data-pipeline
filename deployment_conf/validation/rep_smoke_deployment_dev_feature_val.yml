@@ -4,7 +4,7 @@ custom:
   basic-cluster: &basic-cluster
     new_cluster:
       spark_version: "13.3.x-scala2.12"
-      policy_id: "000AC0102CFB0F36"
+      policy_id: "784e7b5d-9f6e-4570-8530-8cc78d54dc66"
       autoscale:
         min_workers: 4
         max_workers: 8

@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     # Load the modules to execute the Subparser decorator
     modules = [
-        'we.pipeline.validation'
+        'data_pipeline.validation'
     ]
     for m in modules:
         import_module(m)
