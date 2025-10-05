@@ -27,40 +27,40 @@ custom:
         permission_level: "CAN_MANAGE_RUN"
 
 environments:
-  dev_synthetic:
+  dev_feature:
     workflows:
-      - name: "we-pipeline-rep-smoke-dev-synthetic-val-v1"
+      - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
         <<: *acl
         job_clusters:
           - job_cluster_key: "default"
             <<: *basic-cluster
         tasks:
-          - task_key: "rep_dev_synthetic_validation_task"
+          - task_key: "rep_dev_feature_validation_task"
             job_cluster_key: "default"
             spark_python_task:
               python_file: "file://main.py"
-              parameters: [ "we.pipeline.validation.task.rep_val", "--env", "dev", "--space", "synthetic", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-            email_notifications:
-              on_success:
-              - jerry.siow@altrata.com
-              - abdulhaziq.matlan@altrata.com
-              on_failure:
-              - jerry.siow@altrata.com
-              - abdulhaziq.matlan@altrata.com
+              parameters: [ "we.pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+            # email_notifications:
+            #   on_success:
+            #   - jerry.siow@altrata.com
+            #   - abdulhaziq.matlan@altrata.com
+            #   on_failure:
+            #   - jerry.siow@altrata.com
+            #   - abdulhaziq.matlan@altrata.com
               
-          - task_key: "rep_dev_synthetic_validation_task_silver"
+          - task_key: "rep_dev_feature_validation_task_silver"
             job_cluster_key: "default"
             spark_python_task:
               python_file: "file://main.py"
-              parameters: [ "we.pipeline.validation.task.rep_val", "--env", "dev", "--space", "synthetic", "--zone", "silver", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+              parameters: [ "we.pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "silver", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
             depends_on:
-              - task_key: "rep_dev_synthetic_validation_task"
+              - task_key: "rep_dev_feature_validation_task"
             tags:
-              "alt:subcomponent": "rep_dev_synthetic_validation_task_silver"
-            email_notifications:
-              on_success:
-              - jerry.siow@altrata.com
-              - abdulhaziq.matlan@altrata.com
-              on_failure:
-              - jerry.siow@altrata.com
-              - abdulhaziq.matlan@altrata.com
+              "alt:subcomponent": "rep_dev_feature_validation_task_silver"
+            # email_notifications:
+            #   on_success:
+            #   - jerry.siow@altrata.com
+            #   - abdulhaziq.matlan@altrata.com
+            #   on_failure:
+            #   - jerry.siow@altrata.com
+            #   - abdulhaziq.matlan@altrata.com
