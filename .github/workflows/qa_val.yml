@@ -39,6 +39,8 @@ on:
         required: true
       DATABRICKS_TOKEN:
         required: true
+      GH_TOKEN:
+        required: true
 
 
 jobs:
@@ -48,6 +50,7 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -62,16 +65,6 @@ jobs:
       - name: Upload configuration file
         run: |
           databricks fs cp --overwrite we/pipeline/core/config/we_pipeline_config_${{ inputs.environment }}.json dbfs:/FileStore/configuration/we_pipeline_config_${{ inputs.environment }}.json
-          databricks secrets put --scope we-pipeline-scope --key ES_ENDPOINT --string-value ${{ secrets.ES_ENDPOINT }}
-          databricks secrets put --scope we-pipeline-scope --key PG_USERNAME --string-value ${{ secrets.PG_USERNAME }}
-          databricks secrets put --scope we-pipeline-scope --key PG_HOST --string-value ${{ secrets.PG_HOST }}
-          databricks secrets put --scope we-pipeline-scope --key PG_PASSWORD --string-value ${{ secrets.PG_PASSWORD }}
-          databricks secrets put --scope we-pipeline-scope --key PG_JDBC_DRIVER --string-value ${{ secrets.PG_JDBC_DRIVER }}
-          databricks secrets put --scope we-pipeline-scope --key JIRA_CLIENT_ID --string-value ${{ secrets.JIRA_CLIENT_ID }}
-          databricks secrets put --scope we-pipeline-scope --key JIRA_CLIENT_SECRET --string-value ${{ secrets.JIRA_CLIENT_SECRET }}
-          databricks secrets put --scope we-pipeline-scope --key SODA_CLOUD_API_KEY --string-value ${{ secrets.SODA_CLOUD_API_KEY }}
-          databricks secrets put --scope we-pipeline-scope --key SODA_CLOUD_API_SECRET --string-value ${{ secrets.SODA_CLOUD_API_SECRET }}
-
       - name: Deploy Integration test suite other than ddp
         if: ${{ inputs.job_type != 'ddp' }}
         run: |
