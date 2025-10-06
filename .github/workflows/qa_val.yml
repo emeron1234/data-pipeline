@@ -81,13 +81,3 @@ jobs:
         if: ${{ inputs.job_type == 'cross_platform_count' }}
         run: |
             dbx launch --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --trace --environment ${{ inputs.environment }}_${{ inputs.space }} --parameters='{"python_params": ["we.pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'", "--test_type", "'${{ inputs.test_type }}'"]}'
-
-      # - name: Run Integration test suite other than ddp
-      #   if: ${{ inputs.job_type != 'ddp' }}
-      #   run: |
-      #       dbx launch --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --trace --environment ${{ inputs.environment }}_${{ inputs.space }} --parameters='{"python_params": ["we.pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'"]}'
-
-      # - name: Run Integration test suite ddp
-      #   if: ${{ inputs.job_type == 'ddp' && inputs.environment != 'prod' }}
-      #   run: |
-      #       dbx launch --job=ddp-val-wf --trace --environment ${{ inputs.environment }}_${{ inputs.space }} --parameters='{"python_params": ["we.pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'"]}'
