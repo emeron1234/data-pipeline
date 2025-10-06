@@ -1,0 +1,40 @@
+## Serverless-compatible job deployment for validation (dev_feature)
+# This file is tailored for workspaces that only allow Serverless (no classic clusters).
+# Key points:
+# - Uses job_clusters with a serverless single-node spec (num_workers: 0)
+# - Adds spark.databricks.cluster.profile=serverless and node_type_id=serverless
+# - Includes PHOTON runtime_engine for better performance (optional)
+# - Keeps parameters consistent with existing validation tasks
+
+environments:
+  dev_feature:
+    workflows:
+      - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
+        job_clusters:
+          - job_cluster_key: "serverless_default"
+            new_cluster:
+              num_workers: 0  # single node serverless
+              spark_version: "13.3.x-scala2.12"
+              runtime_engine: "PHOTON"
+              spark_conf:
+                spark.databricks.cluster.profile: "serverless"
+                spark.databricks.adaptive.autoOptimizeShuffle.enabled: "true"
+                spark.cleaner.referenceTracking.cleanCheckpoints: "true"
+                spark.databricks.python.defaultPythonRepl: "pythonshell"
+              node_type_id: "serverless"  # Databricks interprets this as serverless placeholder
+        
+        tasks:
+          - task_key: "rep_dev_feature_validation_task"
+            job_cluster_key: "serverless_default"
+            spark_python_task:
+              python_file: "file://main.py"
+              parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+          - task_key: "rep_dev_feature_validation_task_silver"
+            job_cluster_key: "serverless_default"
+            spark_python_task:
+              python_file: "file://main.py"
+              parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "silver", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+            depends_on:
+              - task_key: "rep_dev_feature_validation_task"
+            tags:
+              alt:subcomponent: "rep_dev_feature_validation_task_silver"

@@ -105,6 +105,21 @@ jobs:
           
           echo "Final configuration:"
           cat .dbx/project.json
+      - name: Select deployment file (fallback to serverless)
+        id: select-deployment
+        run: |
+          INPUT_FILE='${{ inputs.deployment_file }}'
+          if grep -q 'serverless' <<<"$INPUT_FILE"; then
+            echo "Using provided serverless deployment file: $INPUT_FILE"
+            echo "DEPLOYMENT_FILE=$INPUT_FILE" >> $GITHUB_ENV
+          elif [ -f "$INPUT_FILE" ]; then
+            echo "Using specified deployment file: $INPUT_FILE";
+            echo "DEPLOYMENT_FILE=$INPUT_FILE" >> $GITHUB_ENV
+          else
+            echo "Specified file not found, defaulting to serverless deployment config.";
+            echo "DEPLOYMENT_FILE=./deployment_conf/validation/rep_smoke_deployment_dev_feature_val_serverless.yml" >> $GITHUB_ENV
+          fi
+          echo "Chosen deployment file: $(grep DEPLOYMENT_FILE $GITHUB_ENV)"
       # - name: Upload configuration file
       # # data_pipeline\core\config\data_pipeline_config_dev.json
       #   run: |
@@ -113,12 +128,14 @@ jobs:
       - name: Deploy Integration test suite other than ddp
         if: ${{ inputs.job_type != 'ddp' }}
         run: |
-          dbx deploy --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --deployment-file=${{ inputs.deployment_file }} --environment ${{ inputs.environment }}_${{ inputs.space }} --debug
+          echo "Deployment file: $DEPLOYMENT_FILE"; ls -l "$DEPLOYMENT_FILE" || (echo "Deployment file missing" && exit 1)
+          dbx deploy --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --deployment-file=$DEPLOYMENT_FILE --environment ${{ inputs.environment }}_${{ inputs.space }} --debug
 
       - name: Deploy Integration test suite ddp
         if: ${{ inputs.job_type == 'ddp' }}
         run: |
-          dbx deploy --job=ddp-val-wf --deployment-file=${{ inputs.deployment_file }} --environment ${{ inputs.environment }}_${{ inputs.space }} --debug
+          echo "Deployment file: $DEPLOYMENT_FILE"; ls -l "$DEPLOYMENT_FILE" || (echo "Deployment file missing" && exit 1)
+          dbx deploy --job=ddp-val-wf --deployment-file=$DEPLOYMENT_FILE --environment ${{ inputs.environment }}_${{ inputs.space }} --debug
 
       - name: Run Integration test suite for cross_platform_count
         if: ${{ inputs.job_type == 'cross_platform_count' }}
