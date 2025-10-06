@@ -68,6 +68,10 @@ jobs:
           pip install -e ".[dev]"
           # Ensure mlflow client available (already in dev extras but force just in case)
           pip install mlflow
+      - name: Enable MLflow artifact monkeypatch
+        run: |
+          echo "Adding pythonpath_patches to PYTHONPATH for sitecustomize monkeypatch"
+          echo "PYTHONPATH=$PWD/pythonpath_patches:${PYTHONPATH}" >> $GITHUB_ENV
       - name: Show configured project.json before configure
         run: |
           echo "--- Current project.json (pre-configure) ---"; cat .dbx/project_filestore.json || true
