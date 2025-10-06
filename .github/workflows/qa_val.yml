@@ -51,6 +51,8 @@ jobs:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      # Set MLflow to use default artifact location to avoid DBFS root issues
+      MLFLOW_DEFAULT_ARTIFACT_ROOT: ""
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -62,6 +64,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel
           pip install -e ".[dev]"
+      - name: Copy Free Edition project configuration
+        run: |
+          cp .dbx/project_free_edition.json .dbx/project.json
       # - name: Upload configuration file
       # # data_pipeline\core\config\data_pipeline_config_dev.json
       #   run: |

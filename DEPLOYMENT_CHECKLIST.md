@@ -32,9 +32,16 @@ Add these secrets:
   - Set `num_workers: 0` for single-node cluster
   - Use available node type (check your Databricks workspace)
 
+- [ ] **Fix DBFS Root Access Issue**
+  - ✅ Updated `.dbx/project.json` to use allowed artifact location
+  - ✅ Created `.dbx/project_free_edition.json` with MLflow default artifact location
+  - ✅ Updated GitHub Actions to copy Free Edition config before deployment
+  - Alternative: Use `dbfs:/tmp/`, `dbfs:/FileStore/`, or user-specific paths
+
 - [ ] **Update workflow file**
   - Modified `qa_workflow.yml` to use Free Edition deployment file
   - ✅ Already updated to use `_free_edition.yml` suffix
+  - ✅ Added DBFS issue handling in workflow
 
 ## Triggering the Job ✅
 
@@ -86,6 +93,12 @@ curl -X POST \
   - Limited execution time
   - No Unity Catalog features
   - Limited storage options (use DBFS instead of Volumes)
+
+- [ ] **DBFS Root Access Issues**
+  - If you see "DBFS root access is disabled" error:
+    - Check that `.dbx/project_free_edition.json` is being used
+    - Verify artifact_location uses allowed paths (`dbfs:/tmp/`, `dbfs:/FileStore/`, or user paths)
+    - See `DBFS_TROUBLESHOOTING.md` for detailed solutions
 
 ## Verification Steps ✅
 

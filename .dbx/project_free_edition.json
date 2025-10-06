@@ -1,0 +1,10 @@
+{
+    "environments": {
+        "dev_feature": {
+            "profile": "DEFAULT",
+            "properties": {
+                "workspace_directory": "/Users/shared/dbx/projects/we-pipeline_dev_feature"
+            }
+        }
+    }
+}

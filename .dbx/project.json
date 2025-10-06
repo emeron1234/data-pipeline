@@ -3,8 +3,8 @@
         "dev_feature": {
             "profile": "DEFAULT",
             "properties": {
-                "workspace_directory": "/Shared/dbx/projects/we-pipeline_dev_feature",
-                "artifact_location": "dbfs:/dbx/we-pipeline_dev_feature"
+                "workspace_directory": "/Users/shared/dbx/projects/we-pipeline_dev_feature",
+                "artifact_location": "dbfs:/tmp/dbx/we-pipeline_dev_feature"
             }
         }
     }
