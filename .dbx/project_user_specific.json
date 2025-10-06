@@ -3,10 +3,10 @@
         "dev_feature": {
             "profile": "DEFAULT",
             "workspace_dir": "/Users/${USER}/dbx/projects/we-pipeline_dev_feature",
-            "artifact_location": "dbfs:/Users/${USER}/dbx/we-pipeline_dev_feature",
+            "artifact_location": "dbfs:/FileStore/data-pipeline-artifacts",
             "properties": {
                 "workspace_directory": "/Users/${USER}/dbx/projects/we-pipeline_dev_feature",
-                "artifact_location": "dbfs:/Users/${USER}/dbx/we-pipeline_dev_feature"
+                "artifact_location": "dbfs:/FileStore/data-pipeline-artifacts"
             }
         }
     }

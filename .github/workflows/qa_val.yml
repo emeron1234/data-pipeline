@@ -53,6 +53,8 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       # Set MLflow to use default artifact location to avoid DBFS root issues
       MLFLOW_DEFAULT_ARTIFACT_ROOT: ""
+      # Force experiment name to a stable /Shared path (experiment will be created automatically if absent)
+      MLFLOW_EXPERIMENT_NAME: "/Shared/dbx/projects/we-pipeline_dev_feature"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -66,7 +68,10 @@ jobs:
           pip install -e ".[dev]"
           # Ensure mlflow client available (already in dev extras but force just in case)
           pip install mlflow
-      - name: Cleanup stale MLflow experiments (artifact path under /dbx)
+      - name: Show configured project.json before configure
+        run: |
+          echo "--- Current project.json (pre-configure) ---"; cat .dbx/project_filestore.json || true
+      - name: Cleanup stale MLflow experiments
         run: |
           python scripts/cleanup_mlflow_experiment.py || echo "Cleanup script finished (non-fatal warnings ignored)"
       - name: Configure dbx for Free Edition
