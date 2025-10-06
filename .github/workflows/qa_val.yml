@@ -64,9 +64,32 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel
           pip install -e ".[dev]"
-      - name: Copy Free Edition project configuration
+      - name: Configure dbx for Free Edition
         run: |
-          cp .dbx/project_free_edition.json .dbx/project.json
+          echo "Trying different dbx configurations for Free Edition compatibility..."
+          
+          # First, try FileStore configuration (most compatible with Free Edition)
+          echo "Testing FileStore configuration..."
+          cp .dbx/project_filestore.json .dbx/project.json
+          if dbx configure --profile DEFAULT --environment dev_feature 2>/dev/null; then
+            echo "✅ FileStore configuration works"
+          else
+            echo "❌ FileStore configuration failed, trying tmp directory..."
+            # Fallback to tmp directory
+            cp .dbx/project_free_edition.json .dbx/project.json
+            if dbx configure --profile DEFAULT --environment dev_feature 2>/dev/null; then
+              echo "✅ Tmp directory configuration works"
+            else
+              echo "❌ Tmp directory failed, trying user-specific path..."
+              # Last resort: user-specific path
+              # Replace ${USER} with actual user from Databricks
+              sed "s/\${USER}/$(echo $DATABRICKS_HOST | cut -d'/' -f3 | cut -d'.' -f1)/g" .dbx/project_user_specific.json > .dbx/project.json
+              echo "✅ Using user-specific configuration"
+            fi
+          fi
+          
+          echo "Final configuration:"
+          cat .dbx/project.json
       # - name: Upload configuration file
       # # data_pipeline\core\config\data_pipeline_config_dev.json
       #   run: |

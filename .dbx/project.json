@@ -2,6 +2,8 @@
     "environments": {
         "dev_feature": {
             "profile": "DEFAULT",
+            "workspace_dir": "/Users/shared/dbx/projects/we-pipeline_dev_feature",
+            "artifact_location": "dbfs:/tmp/dbx/we-pipeline_dev_feature",
             "properties": {
                 "workspace_directory": "/Users/shared/dbx/projects/we-pipeline_dev_feature",
                 "artifact_location": "dbfs:/tmp/dbx/we-pipeline_dev_feature"

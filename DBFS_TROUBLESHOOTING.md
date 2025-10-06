@@ -1,6 +1,8 @@
-# DBFS Root Access Issue - Troubleshooting Guide
+# DBFS Root Access & Validation Issues - Troubleshooting Guide
 
-## Problem
+## Problems
+
+### Problem 1: DBFS Root Access
 ```
 RestException: INVALID_PARAMETER_VALUE: The specified DBFS artifact location 
 dbfs:/dbx/we-pipeline_dev_feature is a DBFS root location. DBFS root access is 
@@ -9,28 +11,70 @@ specify an alternative artifact location, such as a location within
 'dbfs:/Volumes/...'.
 ```
 
-## Root Cause
-- DBFS root access is disabled in many Databricks workspaces (especially Free Edition)
-- The original configuration uses `dbfs:/dbx/` which is a DBFS root location
-- Modern Databricks workspaces restrict access to DBFS root for security reasons
+### Problem 2: Validation Errors
+```
+ValidationError: 3 validation errors for ProjectInfo
+environments -> dev_feature -> properties -> artifact_location
+  field required (type=value_error.missing)
+environments -> dev_feature -> workspace_dir
+  field required (type=value_error.missing)
+environments -> dev_feature -> artifact_location
+  field required (type=value_error.missing)
+```
+
+## Root Causes
+1. **DBFS Root Access**: Disabled in Free Edition and modern workspaces for security
+2. **Missing Required Fields**: dbx tool requires `workspace_dir` and `artifact_location` at environment level
+3. **Incorrect Field Structure**: Fields must be both in `properties` and at environment level
 
 ## Solutions Implemented
 
-### Solution 1: Use MLflow Default Artifact Location (Recommended)
-✅ **Created**: `.dbx/project_free_edition.json` without `artifact_location`
-- When `artifact_location` is omitted, MLflow uses its default location
-- Default location is usually workspace-specific and allowed
+### Solution 1: FileStore Configuration (Most Recommended)
+✅ **Created**: `.dbx/project_filestore.json`
+```json
+{
+    "environments": {
+        "dev_feature": {
+            "profile": "DEFAULT",
+            "workspace_dir": "/Shared/dbx/projects/we-pipeline_dev_feature",
+            "artifact_location": "dbfs:/FileStore/shared_uploads/dbx/we-pipeline_dev_feature",
+            "properties": {
+                "workspace_directory": "/Shared/dbx/projects/we-pipeline_dev_feature",
+                "artifact_location": "dbfs:/FileStore/shared_uploads/dbx/we-pipeline_dev_feature"
+            }
+        }
+    }
+}
+```
 
-### Solution 2: Use Allowed DBFS Paths
-✅ **Updated**: `.dbx/project.json` to use `dbfs:/tmp/` path
-- `dbfs:/tmp/` is typically allowed even with DBFS root restrictions
-- Alternative: `dbfs:/FileStore/` or user-specific paths
+### Solution 2: Temp Directory Configuration
+✅ **Updated**: `.dbx/project_free_edition.json` with all required fields
+```json
+{
+    "environments": {
+        "dev_feature": {
+            "profile": "DEFAULT",
+            "workspace_dir": "/Users/shared/dbx/projects/we-pipeline_dev_feature",
+            "artifact_location": "dbfs:/tmp/dbx/we-pipeline_dev_feature",
+            "properties": {
+                "workspace_directory": "/Users/shared/dbx/projects/we-pipeline_dev_feature",
+                "artifact_location": "dbfs:/tmp/dbx/we-pipeline_dev_feature"
+            }
+        }
+    }
+}
+```
 
-### Solution 3: Updated Workflow Configuration
-✅ **Updated**: GitHub Actions workflow to:
-- Copy Free Edition configuration before deployment
-- Set `MLFLOW_DEFAULT_ARTIFACT_ROOT=""` to use defaults
-- Handle DBFS restrictions automatically
+### Solution 3: User-Specific Configuration
+✅ **Created**: `.dbx/project_user_specific.json`
+- Uses user-specific DBFS paths
+- Replace `${USER}` with actual username
+
+### Solution 4: Enhanced GitHub Actions Workflow
+✅ **Updated**: Tries configurations in order of compatibility
+1. FileStore (most compatible)
+2. Temp directory (fallback)
+3. User-specific (last resort)
 
 ## Alternative Artifact Locations
 
