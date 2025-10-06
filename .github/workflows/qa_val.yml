@@ -64,12 +64,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel
           pip install -e ".[dev]"
+          # Ensure mlflow client available (already in dev extras but force just in case)
+          pip install mlflow
+      - name: Cleanup stale MLflow experiments (artifact path under /dbx)
+        run: |
+          python scripts/cleanup_mlflow_experiment.py || echo "Cleanup script finished (non-fatal warnings ignored)"
       - name: Configure dbx for Free Edition
         run: |
           echo "Trying different dbx configurations for Free Edition compatibility..."
           
           # First, try FileStore configuration (most compatible with Free Edition)
           echo "Testing FileStore configuration..."
+          # Always start from bundled FileStore config (we've unified configs to FileStore path)
           cp .dbx/project_filestore.json .dbx/project.json
           if dbx configure --profile DEFAULT --environment dev_feature 2>/dev/null; then
             echo "✅ FileStore configuration works"
