@@ -14,27 +14,23 @@ environments:
         tasks:
           - task_key: "rep_dev_feature_validation_task"
             new_cluster:
-              spark_version: "15.4.x-scala2.12"  # use a more recent serverless-supported runtime (adjust if unsupported)
-              num_workers: 1  # serverless often expects at least 1 worker
-              runtime_engine: "PHOTON"
+              spark_version: "13.3.x-scala2.12"  # older widely available LTS runtime often enabled for serverless
+              num_workers: 1
               spark_conf:
                 spark.databricks.cluster.profile: "serverless"
-                spark.databricks.adaptive.autoOptimizeShuffle.enabled: "true"
-                spark.cleaner.referenceTracking.cleanCheckpoints: "true"
-                spark.databricks.python.defaultPythonRepl: "pythonshell"
+              custom_tags:
+                ResourceClass: "Serverless"
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
           - task_key: "rep_dev_feature_validation_task_silver"
             new_cluster:
-              spark_version: "15.4.x-scala2.12"
+              spark_version: "13.3.x-scala2.12"
               num_workers: 1
-              runtime_engine: "PHOTON"
               spark_conf:
                 spark.databricks.cluster.profile: "serverless"
-                spark.databricks.adaptive.autoOptimizeShuffle.enabled: "true"
-                spark.cleaner.referenceTracking.cleanCheckpoints: "true"
-                spark.databricks.python.defaultPythonRepl: "pythonshell"
+              custom_tags:
+                ResourceClass: "Serverless"
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "silver", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
