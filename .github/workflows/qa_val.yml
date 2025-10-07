@@ -109,15 +109,19 @@ jobs:
         id: select-deployment
         run: |
           INPUT_FILE='${{ inputs.deployment_file }}'
+          SERVERLESS_FILE=./deployment_conf/validation/rep_smoke_deployment_dev_feature_val_serverless.yml
           if grep -q 'serverless' <<<"$INPUT_FILE"; then
             echo "Using provided serverless deployment file: $INPUT_FILE"
             echo "DEPLOYMENT_FILE=$INPUT_FILE" >> $GITHUB_ENV
+          elif grep -q 'free_edition' <<<"$INPUT_FILE"; then
+            echo "'free_edition' file specified but workspace is serverless-only; forcing serverless deployment file"
+            echo "DEPLOYMENT_FILE=$SERVERLESS_FILE" >> $GITHUB_ENV
           elif [ -f "$INPUT_FILE" ]; then
-            echo "Using specified deployment file: $INPUT_FILE";
-            echo "DEPLOYMENT_FILE=$INPUT_FILE" >> $GITHUB_ENV
+            echo "Using specified deployment file: $INPUT_FILE (no explicit serverless token, overriding to serverless for safety)";
+            echo "DEPLOYMENT_FILE=$SERVERLESS_FILE" >> $GITHUB_ENV
           else
             echo "Specified file not found, defaulting to serverless deployment config.";
-            echo "DEPLOYMENT_FILE=./deployment_conf/validation/rep_smoke_deployment_dev_feature_val_serverless.yml" >> $GITHUB_ENV
+            echo "DEPLOYMENT_FILE=$SERVERLESS_FILE" >> $GITHUB_ENV
           fi
           echo "Chosen deployment file: $(grep DEPLOYMENT_FILE $GITHUB_ENV)"
       # - name: Upload configuration file
