@@ -64,7 +64,7 @@ jobs:
       # Testing ----------------------------
       - name: Check if secrets are available
         run: |
-          if [ -z "${{ secrets.GH_TOKEN }}" ] " ]; then
+          if [ -z "${{ secrets.GH_TOKEN }}" ]; then
             echo "Secrets not set properly. ${{ secrets.GH_TOKEN }} "
             exit 1
           else
