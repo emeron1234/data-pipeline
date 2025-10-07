@@ -61,6 +61,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel
           pip install -e ".[dev]"
+      # Testing ----------------------------
+      - name: Check if secrets are available
+        run: |
+          if [ -z "${{ secrets.DATABRICKS_HOST }}" ] || [ -z "${{ secrets.DATABRICKS_TOKEN }}" ]; then
+            echo "Secrets not set properly. ${{ secrets.DATABRICKS_HOST }} | ${{ secrets.DATABRICKS_TOKEN }}"
+            exit 1
+          else
+            echo "Secrets are set"
+          fi
+
       - name: Upload configuration file
         run: |
           databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_${{ inputs.environment }}.json dbfs:/FileStore/configuration/data_pipeline_config_${{ inputs.environment }}.json
