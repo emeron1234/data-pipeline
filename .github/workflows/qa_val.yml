@@ -63,7 +63,7 @@ jobs:
           pip install -e ".[dev]"
       - name: Upload configuration file
         run: |
-          databricks fs cp --overwrite we/pipeline/core/config/we_pipeline_config_${{ inputs.environment }}.json dbfs:/FileStore/configuration/we_pipeline_config_${{ inputs.environment }}.json
+          databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_${{ inputs.environment }}.json dbfs:/FileStore/configuration/data_pipeline_config_${{ inputs.environment }}.json
       - name: Deploy Integration test suite other than ddp
         if: ${{ inputs.job_type != 'ddp' }}
         run: |
