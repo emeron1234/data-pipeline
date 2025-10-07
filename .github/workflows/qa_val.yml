@@ -64,8 +64,8 @@ jobs:
       # Testing ----------------------------
       - name: Check if secrets are available
         run: |
-          if [ -z "${{ secrets.DATABRICKS_HOST }}" ] || [ -z "${{ secrets.DATABRICKS_TOKEN }}" ]; then
-            echo "Secrets not set properly. ${{ secrets.DATABRICKS_HOST }} | ${{ secrets.DATABRICKS_TOKEN }}"
+          if [ -z "${{ secrets.GH_TOKEN }}" ] " ]; then
+            echo "Secrets not set properly. ${{ secrets.GH_TOKEN }} "
             exit 1
           else
             echo "Secrets are set"
