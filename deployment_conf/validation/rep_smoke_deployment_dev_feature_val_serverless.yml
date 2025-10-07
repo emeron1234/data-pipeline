@@ -10,27 +10,22 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
-        # Inline serverless cluster specification per task to avoid separate job_cluster creation
+        job_clusters:
+          - job_cluster_key: serverless_cluster
+            new_cluster:
+              spark_version: "13.3.x-scala2.12"  # adjust to an actual serverless-supported version from clusters spark-versions
+              node_type_id: "serverless"         # explicit serverless flag
+              num_workers: 1                      # serverless min workers
+              data_security_mode: "SINGLE_USER"  # common for serverless jobs
+              runtime_engine: "PHOTON"           # optional; remove if rejected
         tasks:
           - task_key: "rep_dev_feature_validation_task"
-            new_cluster:
-              spark_version: "13.3.x-scala2.12"  # older widely available LTS runtime often enabled for serverless
-              num_workers: 1
-              spark_conf:
-                spark.databricks.cluster.profile: "serverless"
-              custom_tags:
-                ResourceClass: "Serverless"
+            job_cluster_key: serverless_cluster
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
           - task_key: "rep_dev_feature_validation_task_silver"
-            new_cluster:
-              spark_version: "13.3.x-scala2.12"
-              num_workers: 1
-              spark_conf:
-                spark.databricks.cluster.profile: "serverless"
-              custom_tags:
-                ResourceClass: "Serverless"
+            job_cluster_key: serverless_cluster
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "silver", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
