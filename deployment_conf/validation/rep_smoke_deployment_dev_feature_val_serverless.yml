@@ -10,27 +10,31 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
-        job_clusters:
-          - job_cluster_key: "serverless_default"
+        # Inline serverless cluster specification per task to avoid separate job_cluster creation
+        tasks:
+          - task_key: "rep_dev_feature_validation_task"
             new_cluster:
-              num_workers: 0  # single node serverless
-              spark_version: "13.3.x-scala2.12"
+              spark_version: "15.4.x-scala2.12"  # use a more recent serverless-supported runtime (adjust if unsupported)
+              num_workers: 1  # serverless often expects at least 1 worker
               runtime_engine: "PHOTON"
               spark_conf:
                 spark.databricks.cluster.profile: "serverless"
                 spark.databricks.adaptive.autoOptimizeShuffle.enabled: "true"
                 spark.cleaner.referenceTracking.cleanCheckpoints: "true"
                 spark.databricks.python.defaultPythonRepl: "pythonshell"
-              node_type_id: "serverless"  # Databricks interprets this as serverless placeholder
-        
-        tasks:
-          - task_key: "rep_dev_feature_validation_task"
-            job_cluster_key: "serverless_default"
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
           - task_key: "rep_dev_feature_validation_task_silver"
-            job_cluster_key: "serverless_default"
+            new_cluster:
+              spark_version: "15.4.x-scala2.12"
+              num_workers: 1
+              runtime_engine: "PHOTON"
+              spark_conf:
+                spark.databricks.cluster.profile: "serverless"
+                spark.databricks.adaptive.autoOptimizeShuffle.enabled: "true"
+                spark.cleaner.referenceTracking.cleanCheckpoints: "true"
+                spark.databricks.python.defaultPythonRepl: "pythonshell"
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "silver", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
