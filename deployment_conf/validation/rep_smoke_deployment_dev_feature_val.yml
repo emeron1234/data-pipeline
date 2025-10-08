@@ -4,18 +4,29 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
-        tasks:
-          - task_key: "rep_dev_feature_validation_task"
-            new_cluster:
-              spark_version: latest
-              node_type_id: Serverless
-              num_workers: 1
+        new_cluster:
+          serverless: true
+          data_security_mode: "SINGLE_USER"
+          spark_version: "15.3.x-scala2.12"
+          num_workers: 1
+        libraries:
+          - whl: "dist/data_pipeline-1.0.0-py3-none-any.whl"
 
-            spark_python_task:
+        spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-            
-            # libraries:
-            #   - whl: "./dist/data_pipeline-1.0.0-py3-none-any.whl"
+        timeout_seconds: 3600
+        max_concurrent_runs: 1
+        # tasks:
+        #   - task_key: "rep_dev_feature_validation_task"
+        #     new_cluster:
+        #       spark_version: latest
+        #       node_type_id: Serverless
+        #       num_workers: 1
+
+        #     spark_python_task:
+        #       python_file: "file://main.py"
+        #       parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+          
 
 
