@@ -65,17 +65,41 @@ jobs:
       # Check DATABRICKS_HOST
       - name: Check DATABRICKS_HOST host resolves
         run: |
-          curl -I "$DATABRICKS_HOST"
+          if [[ ! "$DATABRICKS_HOST" =~ ^https?:// ]]; then
+            echo "Error: DATABRICKS_HOST must start with http:// or https://"
+            exit 1
+          fi
+          curl -Is --fail "$DATABRICKS_HOST" || { echo "❌ Host not reachable"; exit 1; }
+          echo "✅ Host is reachable"
       
       # Check DATABRICKS_TOKEN
       - name: Check DATABRICKS_TOKEN authentication
         run: |
-          status=$(curl -s -o /dev/null -w "%{http_code}" "$DATABRICKS_HOST/api/2.0/clusters/list")
-          echo $status
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+            "$DATABRICKS_HOST/api/2.0/clusters/list")
+
+          if [ "$response" -eq 200 ]; then
+            echo "✅ DATABRICKS_TOKEN is valid."
+          elif [ "$response" -eq 401 ]; then
+            echo "❌ Unauthorized: DATABRICKS_TOKEN is invalid or expired."
+            exit 1
+          else
+            echo "⚠️ Unexpected response code: $response"
+            exit 1
+          fi
+
       # Check GH_TOKEN
       - name: Check GH_TOKEN authentication
         run: |
-          curl -i -H "Authorization: token $GH_TOKEN" https://api.github.com/
+          user=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/user | jq -r '.login')
+          if [ "$user" = "null" ] || [ -z "$user" ]; then
+            echo "❌ GH_TOKEN invalid or expired."
+            exit 1
+          else
+            echo "✅ Authenticated as: $user"
+          fi
+      # Check GH_TOKEN User
       - name: Check GitHub user
         run: |
           curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/user | jq
@@ -88,6 +112,7 @@ jobs:
           else
             echo "Secrets are set"
           fi
+      # Testing ----------------------------
 
       - name: Upload configuration file
         run: |
