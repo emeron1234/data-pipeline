@@ -113,10 +113,20 @@ jobs:
             echo "Secrets are set"
           fi
       # Testing ----------------------------
+      - name: Configure Databricks CLI
+        run: |
+          export DATABRICKS_HOST=$DATABRICKS_HOST
+          export DATABRICKS_TOKEN=$DATABRICKS_TOKEN
+          databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_dev.json /Volumes/data_lake_dev/feature_config/volume/data_pipeline_config_dev.json
+        # databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_dev.json dbfs:/FileStore/configuration/data_pipeline_config_dev.json
+
+
+
 
       - name: Upload configuration file
         run: |
-          databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_${{ inputs.environment }}.json dbfs:/FileStore/configuration/data_pipeline_config_${{ inputs.environment }}.json
+          databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_dev.json /Volumes/data_lake_dev/feature_config/volume/data_pipeline_config_dev.json
+# databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_${{ inputs.environment }}.json dbfs:/FileStore/configuration/data_pipeline_config_${{ inputs.environment }}.json
       - name: Deploy Integration test suite other than ddp
         if: ${{ inputs.job_type != 'ddp' }}
         run: |
