@@ -10,23 +10,14 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
-        job_clusters:
-          - job_cluster_key: "single_node_cluster"
-            new_cluster:
-              spark_version: "14.3.x-scala2.12"
-              node_type_id: "i3.xlarge"
-              num_workers: 0
-              spark_conf:
-                spark.databricks.cluster.profile: "singleNode"
-                spark.master: "local[*]"
-              custom_tags:
-                ResourceClass: "SingleNode"
-              runtime_engine: "STANDARD"
-
+        job_clusters: []
 
         tasks:
           - task_key: "rep_dev_feature_validation_task"
-            job_cluster_key: "single_node_cluster"
+            job_cluster_key: null  # not needed
+            existing_cluster_id: null  # not needed
+            serverless: true   # 👈 NEW FIELD for Databricks Premium/Serverless
+            
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
