@@ -139,16 +139,45 @@ jobs:
       #   # databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_dev.json /Volumes/data_lake_dev/feature_config/volume/data_pipeline_config_dev.json
 
 
-      - name: Install latest dbx
+      # - name: Install latest dbx
+      #   run: |
+      #     pip install --upgrade pip
+      #     pip install "dbx>=0.8.19" --no-cache-dir
+
+      - name: Select deployment file (serverless fallback)
         run: |
-          pip install --upgrade pip
-          pip install "dbx>=0.8.19" --no-cache-dir
+          DEPLOYMENT_FILE="${{ inputs.deployment_file }}"
+          SERVERLESS_FILE="./deployment_conf/validation/rep_smoke_deployment_dev_feature_val.yml"
+          MINIMAL_FILE="./deployment_conf/validation/rep_smoke_deployment_dev_feature_val_minimal.yml"
+          
+          if [ -f "$DEPLOYMENT_FILE" ]; then
+            echo "DEPLOYMENT_FILE=$DEPLOYMENT_FILE" >> $GITHUB_ENV
+            echo "Using provided deployment file: $DEPLOYMENT_FILE"
+          elif [ -f "$SERVERLESS_FILE" ]; then
+            echo "DEPLOYMENT_FILE=$SERVERLESS_FILE" >> $GITHUB_ENV
+            echo "Using serverless deployment file: $SERVERLESS_FILE"
+          elif [ -f "$MINIMAL_FILE" ]; then
+            echo "DEPLOYMENT_FILE=$MINIMAL_FILE" >> $GITHUB_ENV
+            echo "Using minimal serverless deployment file: $MINIMAL_FILE"
+          else
+            echo "❌ No suitable deployment file found"
+            exit 1
+          fi
 
-
+      - name: Validate runtime version
+        run: |
+          echo "Checking available Spark versions for serverless..."
+          curl -s -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+            "$DATABRICKS_HOST/api/2.0/clusters/spark-versions" | \
+            jq -r '.spark_versions[] | select(.name | contains("LTS")) | .key' | head -5
 
       - name: Deploy Integration Test Suite
         run: |
-          dbx deploy --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --deployment-file=${{ inputs.deployment_file }} --environment ${{ inputs.environment }}_${{ inputs.space }} --debug
+          echo "Deploying with file: $DEPLOYMENT_FILE"
+          dbx deploy --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
+            --deployment-file="$DEPLOYMENT_FILE" \
+            --environment ${{ inputs.environment }}_${{ inputs.space }} \
+            --debug
       - name: Run Integration test suite for cross_platform_count
         run: |
             dbx launch --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --trace --environment ${{ inputs.environment }}_${{ inputs.space }} --parameters='{"python_params": ["we.pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'", "--test_type", "'${{ inputs.test_type }}'"]}'
