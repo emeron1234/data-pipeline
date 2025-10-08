@@ -6,8 +6,8 @@ environments:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
         tasks:
           - task_key: "rep_dev_feature_validation_task"
-            # sql_warehouse_id: "56af6c480d39119e"
-            existing_cluster_id: "1008-091730-s9vyha9z-v2n"
+            sql_warehouse_id: "56af6c480d39119e"
+            # existing_cluster_id: "1008-091730-s9vyha9z-v2n"
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
