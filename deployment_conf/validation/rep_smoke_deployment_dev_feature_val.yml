@@ -10,13 +10,18 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
-        job_clusters: []
+        job_clusters:
+          - job_cluster_key: "serverless_cluster"
+            new_cluster:
+              spark_version: "13.3.x-scala2.12"
+              node_type_id: "Standard_DS3_v2"
+              num_workers: 1
+              spark_conf:
+                "spark.databricks.cluster.profile": "serverless"
 
         tasks:
           - task_key: "rep_dev_feature_validation_task"
-            job_cluster_key: null  # not needed
-            existing_cluster_id: null  # not needed
-            serverless: true   # 👈 NEW FIELD for Databricks Premium/Serverless
+            job_cluster_key: "serverless_cluster"
 
             spark_python_task:
               python_file: "file://main.py"
