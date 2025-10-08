@@ -1,8 +1,10 @@
 {
-    "environments": {
-        "dev_feature": {
-            "profile": "DEFAULT",
-            "workspace_dir": "/Shared/dbx/projects/data-pipeline_dev_feature_v2"
-        }
+  "environments": {
+    "dev_feature": {
+      "properties": {
+        "profile": "DEFAULT",
+        "workspace_directory": "/Shared/dbx/projects/data-pipeline_dev_feature_v2"
+      }
     }
+  }
 }
