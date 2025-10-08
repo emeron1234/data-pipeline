@@ -10,31 +10,21 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
-        # Inline serverless cluster specification per task to avoid separate job_cluster creation
+        job_clusters:
+          - job_cluster_key: serverless_single_node
+            new_cluster:
+              compute_type: serverless
+              spark_version: 13.3.x-scala2.12
+              data_security_mode: SINGLE_USER
+              custom_tags:
+                ResourceClass: Serverless
+
+
         tasks:
           - task_key: "rep_dev_feature_validation_task"
-            new_cluster:
-              spark_version: "13.3.x-scala2.12"  # older widely available LTS runtime often enabled for serverless
-              num_workers: 1
-              spark_conf:
-                spark.databricks.cluster.profile: "serverless"
-              custom_tags:
-                ResourceClass: "Serverless"
+            job_cluster_key: serverless_single_node
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-          - task_key: "rep_dev_feature_validation_task_silver"
-            new_cluster:
-              spark_version: "13.3.x-scala2.12"
-              num_workers: 1
-              spark_conf:
-                spark.databricks.cluster.profile: "serverless"
-              custom_tags:
-                ResourceClass: "Serverless"
-            spark_python_task:
-              python_file: "file://main.py"
-              parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "silver", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-            depends_on:
-              - task_key: "rep_dev_feature_validation_task"
-            tags:
-              alt:subcomponent: "rep_dev_feature_validation_task_silver"
+              libraries:
+              - whl: "dist/data_pipeline-1.0.0-py3-none-any.whl"
