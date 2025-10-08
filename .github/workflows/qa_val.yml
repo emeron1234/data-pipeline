@@ -113,13 +113,28 @@ jobs:
             echo "Secrets are set"
           fi
       # Testing ----------------------------
-      - name: Upload configuration file
+      - name: Upload config file to Unity Catalog Volume (overwrite-safe)
         run: |
-          curl -X POST -n \
-            -H "Authorization: Bearer $DATABRICKS_TOKEN" \
-            -F path="/Volumes/data_lake_dev/feature_config/volume/data_pipeline_config_dev.json" \
+          set -e
+          file_path="/Volumes/data_lake_dev/feature_config/volume/data_pipeline_config_dev.json"
+
+          echo "🧹 Checking and deleting existing file (if any)..."
+          curl -s -X DELETE -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+            "$DATABRICKS_HOST/api/2.0/fs/files/delete?path=${file_path}" || true
+
+          echo "⬆️ Uploading new configuration file..."
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+            -F path="${file_path}" \
             -F contents=@data_pipeline/core/config/data_pipeline_config_dev.json \
-            "$DATABRICKS_HOST/api/2.0/fs/files/upload"
+            "$DATABRICKS_HOST/api/2.0/fs/files/upload")
+
+          if [ "$status" -eq 200 ]; then
+            echo "✅ File uploaded successfully to ${file_path}"
+          else
+            echo "❌ Upload failed with status code: $status"
+            exit 1
+          fi
 
         # databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_dev.json /Volumes/data_lake_dev/feature_config/volume/data_pipeline_config_dev.json
 
