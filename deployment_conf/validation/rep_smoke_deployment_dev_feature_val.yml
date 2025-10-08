@@ -10,13 +10,30 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
+        # Define a job cluster for the tasks
+        job_clusters:
+          - job_cluster_key: serverless_single_node
+            new_cluster:
+              spark_version: "13.3.x-scala2.12"
+              num_workers: 0
+              data_security_mode: SINGLE_USER
+              runtime_engine: STANDARD
+              custom_tags:
+                usage: "serverless-single-node"
+              # This line tells Databricks to use Serverless compute
+              serverless: true
+              spark_conf:
+                spark.databricks.cluster.profile: serverless
+
         compute:
           - compute_key: serverless_compute
             compute_type: SERVERLESS
             spec:
               kind: SERVERLESS
-
-
+              serverless:
+                enabled: true
+              spark_conf:
+                spark.databricks.cluster.profile: serverless
 
         tasks:
           - task_key: "rep_dev_feature_validation_task"
