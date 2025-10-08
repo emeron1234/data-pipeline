@@ -139,6 +139,10 @@ jobs:
       #   # databricks fs cp --overwrite data_pipeline/core/config/data_pipeline_config_dev.json /Volumes/data_lake_dev/feature_config/volume/data_pipeline_config_dev.json
 
 
+      - name: Install latest dbx
+        run: |
+          pip install --upgrade pip
+          pip install "dbx>=0.8.19" --no-cache-dir
 
 
 
