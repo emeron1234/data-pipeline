@@ -1,30 +1,21 @@
-## Serverless-compatible job deployment for validation (dev_feature)
-# This file is tailored for workspaces that only allow Serverless (no classic clusters).
-# Key points:
-# - Uses job_clusters with a serverless single-node spec (num_workers: 0)
-# - Adds spark.databricks.cluster.profile=serverless and node_type_id=serverless
-# - Includes PHOTON runtime_engine for better performance (optional)
-# - Keeps parameters consistent with existing validation tasks
+
 
 environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
         job_clusters:
-          - job_cluster_key: "serverless_cluster"
+          - job_cluster_key: "dev_feature_cluster"
             new_cluster:
-              spark_version: "14.3.x-scala2.12"  # Use a more recent LTS version
-              node_type_id: "serverless"         # Explicit serverless node type
-              num_workers: 0                     # Serverless uses 0 workers
+              spark_version: "15.3.x-scala2.12"
+              node_type_id: "i3.xlarge"
+              num_workers: 1
               data_security_mode: "SINGLE_USER"
-              spark_conf:
-                "spark.databricks.cluster.profile": "serverless"
-              custom_tags:
-                ResourceClass: "Serverless"
+
 
         tasks:
           - task_key: "rep_dev_feature_validation_task"
-            job_cluster_key: "serverless_cluster"
+            job_cluster_key: "dev_feature_cluster"
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
