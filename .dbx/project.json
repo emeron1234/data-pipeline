@@ -2,8 +2,7 @@
     "environments": {
         "dev_feature": {
             "profile": "DEFAULT",
-            "workspace_dir": "/Shared/dbx/projects/data-pipeline_dev_feature_v2",
-            "artifact_location": "dbfs:/FileStore/dbx/dev_feature/artifacts"
+            "workspace_dir": "/Shared/dbx/projects/data-pipeline_dev_feature_v2"
         }
     }
 }
