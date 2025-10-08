@@ -10,14 +10,9 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
-        job_clusters:
-          - job_cluster_key: serverless_single_node
-            new_cluster:
-              compute_type: serverless
-              spark_version: 13.3.x-scala2.12
-              data_security_mode: SINGLE_USER
-              custom_tags:
-                ResourceClass: Serverless
+        compute:
+          - compute_key: serverless_compute
+            compute_type: SERVERLESS
 
 
         tasks:
