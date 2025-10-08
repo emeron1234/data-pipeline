@@ -13,6 +13,9 @@ environments:
         compute:
           - compute_key: serverless_compute
             compute_type: SERVERLESS
+            spec:
+              kind: SERVERLESS
+
 
 
         tasks:
