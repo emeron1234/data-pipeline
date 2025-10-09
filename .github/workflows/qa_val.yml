@@ -63,9 +63,9 @@ jobs:
           pip install -e ".[dev]"
 
       # -----------
-      - name: Upgrade Databricks CLI
-        run: |
-          pip install "databricks-cli>=0.270.0"
+      # - name: Upgrade Databricks CLI
+      #   run: |
+      #     pip install "databricks-cli>=0.270.0"
       - name: Verify Databricks CLI Version
         run: |
           databricks --version
@@ -81,14 +81,12 @@ jobs:
           echo "[DEFAULT]" > ~/.databrickscfg
           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
           echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+      # -----------
 
       - name: Run Job
         run: |
           databricks bundle run -t dev_feature data_pipeline-rep-smoke-dev-feature-val-v1 \
           --parameters='{"parameters": ["data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke"]}'
-
-      # -----------
-      
 
       # - name: Deploy Integration Test Suite
       #   run: |
