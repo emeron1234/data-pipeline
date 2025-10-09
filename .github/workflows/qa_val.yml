@@ -64,7 +64,7 @@ jobs:
           pip install -U databricks
           echo "✅ Installed new Databricks CLI:"
           which databricks
-          databricks --version
+          databricks version
           databricks -v
 
       - name: Configure Databricks CLI
