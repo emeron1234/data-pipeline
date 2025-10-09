@@ -86,7 +86,7 @@ jobs:
       - name: Deploy Integration Test Suite
         run: |
           echo "Deploying with file: $DEPLOYMENT_FILE"
-          dbx deploy --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
+          dbx deploy --job=data_pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
             --deployment-file="$DEPLOYMENT_FILE" \
             --environment ${{ inputs.environment }}_${{ inputs.space }} \
             --no-rebuild \
@@ -96,6 +96,6 @@ jobs:
       - name: Run Integration Test Suite
         run: |
           echo "Launch file: $DEPLOYMENT_FILE"
-          dbx launch --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
+          dbx launch --job=data_pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
           --trace --environment ${{ inputs.environment }}_${{ inputs.space }} \
           --parameters='{"python_params": ["data_pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'", "--test_type", "'${{ inputs.test_type }}'"]}'

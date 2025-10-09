@@ -1,7 +1,7 @@
 environments:
   dev_feature:
     workflows:
-      - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
+      - name: "data_pipeline-rep-smoke-dev-feature-val-v1"
         tasks:
           - task_key: "rep_dev_feature_validation_task"
             spark_python_task:
