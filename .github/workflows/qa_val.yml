@@ -57,7 +57,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -e ".[dev]"
 
-      # --- IMPORTANT FIX ---
+      # --- IMPORTANT FIX: Test Databricks CLI ---
       - name: Install new Databricks CLI (v0.205)
         run: |
           pip uninstall -y databricks-cli || true
