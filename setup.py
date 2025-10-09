@@ -46,7 +46,6 @@ DEV_REQUIREMENTS = [
     # 'dbx>=0.7,<0.8',
     # Make sure use the latest version of the dbx
     'dbx>=0.8.19',
-    # 'databricks-cli>=0.17.8,<0.19.0',
     'click==8.2.1',
     'typer==0.7.0',
     'requests>=2.28.0,<3.0.0',
