@@ -64,13 +64,17 @@ jobs:
 
       # -----------
       - name: Upgrade Databricks CLI
-        run: pip install --upgrade databricks-cli
+        run: |
+          pip install "databricks-cli>=0.270.0"
       - name: Verify Databricks CLI Version
-        run: databricks --version
+        run: |
+          databricks --version
       - name: Build Wheel
-        run: python setup.py bdist_wheel
+        run: |
+          python setup.py bdist_wheel
       - name: Deploy Bundle
-        run: databricks bundle deploy -t dev_feature
+        run: |
+          databricks bundle deploy -t dev_feature
 
       - name: Configure Databricks CLI
         run: |
