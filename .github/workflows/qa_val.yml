@@ -57,46 +57,53 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-      # - name: Install Databricks CLI
-      #   run: pip install databricks-cli
+      - name: Install Databricks CLI
+        run: pip install --upgrade databricks-cli
+      
+      # -----------
+      - name: Configure Databricks CLI
+        run: |
+          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+      # -----------
+
+
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip wheel
           pip install -e ".[dev]"
+      
+      # -----------
+      - name: Build Wheel
+        run: python setup.py bdist_wheel
 
-      # - name: Select deployment file (serverless fallback)
+      - name: Deploy Bundle
+        run: databricks bundle deploy -t dev_feature
+
+      - name: Run Job
+        run: |
+          databricks bundle run -t dev_feature data_pipeline-rep-smoke-dev-feature-val-v1 \
+          --parameters='{"parameters": ["data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke"]}'
+
+      # -----------
+      
+
+      # - name: Deploy Integration Test Suite
       #   run: |
       #     DEPLOYMENT_FILE="${{ inputs.deployment_file }}"
-          
-      #     if [ -f "$DEPLOYMENT_FILE" ]; then
-      #       echo "DEPLOYMENT_FILE=$DEPLOYMENT_FILE" >> $GITHUB_ENV
-      #       echo "Using provided deployment file: $DEPLOYMENT_FILE"
-      #     else
-      #       echo "❌ No suitable deployment file found"
-      #       exit 1
-      #     fi
+      #     echo "Deploying with file: $DEPLOYMENT_FILE"
+      #     dbx deploy --job=data_pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
+      #       --deployment-file="$DEPLOYMENT_FILE" \
+      #       --environment ${{ inputs.environment }}_${{ inputs.space }} \
+      #       --no-rebuild \
+      #       --no-package \
+      #       --debug
 
-      # - name: Validate runtime version
+      # - name: Run Integration Test Suite
       #   run: |
-      #     echo "Checking available Spark versions for serverless..."
-      #     curl -s -H "Authorization: Bearer $DATABRICKS_TOKEN" \
-      #       "$DATABRICKS_HOST/api/2.0/clusters/spark-versions" | \
-      #       jq -r '.spark_versions[] | select(.name | contains("LTS")) | .key' | head -5
-
-      - name: Deploy Integration Test Suite
-        run: |
-          DEPLOYMENT_FILE="${{ inputs.deployment_file }}"
-          echo "Deploying with file: $DEPLOYMENT_FILE"
-          dbx deploy --job=data_pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
-            --deployment-file="$DEPLOYMENT_FILE" \
-            --environment ${{ inputs.environment }}_${{ inputs.space }} \
-            --no-rebuild \
-            --no-package \
-            --debug
-
-      - name: Run Integration Test Suite
-        run: |
-          echo "Launch file: $DEPLOYMENT_FILE"
-          dbx launch --job=data_pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
-          --trace --environment ${{ inputs.environment }}_${{ inputs.space }} \
-          --parameters='{"python_params": ["data_pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'", "--test_type", "'${{ inputs.test_type }}'"]}'
+      #     echo "Launch file: $DEPLOYMENT_FILE"
+      #     dbx launch --job=data_pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
+      #     --trace --environment ${{ inputs.environment }}_${{ inputs.space }} \
+      #     --parameters='{"python_params": ["data_pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'", "--test_type", "'${{ inputs.test_type }}'"]}'

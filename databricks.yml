@@ -1,0 +1,24 @@
+bundle:
+  name: "data_pipeline_bundle"  # Unique name for your bundle
+
+targets:
+  dev_feature:  # Matches your dbx environment
+    workspace:
+      root_path: "/Shared/dbx/projects/data-pipeline_dev_feature_v2"  # From your MLflow experiment path in logs
+      artifact_path: "/Volumes/data_lake_dev/feature_artifacts/databricks_store"  # From your logs; for wheel uploads
+    resources:
+      jobs:
+        data_pipeline-rep-smoke-dev-feature-val-v1:  # Your workflow name
+          tasks:
+            - task_key: "rep_dev_feature_validation_task"
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+              environment_key: "default"
+          environments:
+            - environment_key: "default"
+              spec:
+                client: "1"  # Enables serverless
+                dependencies:
+                  - "dist/data_pipeline-1.0.2-py3-none-any.whl"  # Local path; DAB auto-uploads during deploy
