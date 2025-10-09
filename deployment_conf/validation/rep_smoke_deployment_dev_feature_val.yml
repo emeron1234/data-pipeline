@@ -2,17 +2,17 @@ environments:
   dev_feature:
     workflows:
       - name: "we-pipeline-rep-smoke-dev-feature-val-v1"
-        # job_clusters:
-        #   - job_cluster_key: "serverless_single_node"
-        #     new_cluster:
-        #       serverless: true
-        #       data_security_mode: "SINGLE_USER"
-        #       spark_version: "15.3.x-scala2.12"
-        #       custom_tags:
-        #         usage: "dbx-deployment"
+        job_clusters:
+          - job_cluster_key: "serverless_cluster"
+            new_cluster:
+              spark_version: "13.3.x-scala2.12"
+              node_type_id: "serverless"
+              num_workers: 1
+              data_security_mode: "SINGLE_USER"
+              runtime_engine: "PHOTON"
         tasks:
           - task_key: "rep_dev_feature_validation_task"
-            # job_cluster_key: "serverless_single_node"
+            job_cluster_key: "serverless_cluster"
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
