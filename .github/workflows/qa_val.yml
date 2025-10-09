@@ -58,7 +58,7 @@ jobs:
           pip install -e ".[dev]"
 
       # --- IMPORTANT FIX ---
-      - name: Install new Databricks CLI (v0.205+)
+      - name: Install new Databricks CLI (v0.205)
         run: |
           pip uninstall -y databricks-cli || true
           pip install -U databricks
