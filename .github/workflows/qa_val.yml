@@ -64,6 +64,7 @@ jobs:
           pip uninstall -y databricks-cli || true
           pip install -U databricks
 
+          export PATH="$HOME/.local/bin:$PATH"
           echo "✅ Installed new Databricks CLI:"
           which databricks || true
           databricks version || true
