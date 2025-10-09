@@ -8,7 +8,9 @@ environments:
               package_name: "data_pipeline"
               entry_point: "data-pipeline-etl"  # Matches setup.py
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-            
+            libraries:
+              - whl: "dist/data_pipeline-1.0.1-py3-none-any.whl"
+
             # spark_python_task:
             #   python_file: "file://main.py"
             #   parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
@@ -20,4 +22,7 @@ environments:
           - environment_key: "default"
             spec:
               client: "1"  # Required for serverless
-              # dependencies: []  # Can be empty or list your deps
+              dependencies:  # Add setup.py deps here if needed (e.g., if ModuleNotFound recurs)
+                - "importlib"
+                - "argparse"
+                - "logging"  # Usually built-in, but add any custom
