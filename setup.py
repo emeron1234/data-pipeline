@@ -102,7 +102,7 @@ setuptools.setup(
     extras_require={'dev': DEV_REQUIREMENTS},
     include_package_data=True,
     package_data={
-        'we.pipeline.core.validation.config': ['*.csv', '*.json'],
-        'we.pipeline.core.validation.yml_query': ["**/*.yml", "**/*.yaml"]
+        'data_pipeline.core.validation.config': ['*.csv', '*.json'],
+        'data_pipeline.core.validation.yml_query': ["**/*.yml", "**/*.yaml"]
     }
 )

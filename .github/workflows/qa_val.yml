@@ -92,6 +92,10 @@ jobs:
             --no-rebuild \
             --no-package \
             --debug
-      - name: Run Integration test suite for cross_platform_count
+
+      - name: Run Integration Test Suite
         run: |
-            dbx launch --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 --trace --environment ${{ inputs.environment }}_${{ inputs.space }} --parameters='{"python_params": ["we.pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'", "--test_type", "'${{ inputs.test_type }}'"]}'
+          echo "Launch file: $DEPLOYMENT_FILE"
+          dbx launch --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
+          --trace --environment ${{ inputs.environment }}_${{ inputs.space }} \
+          --parameters='{"python_params": ["data_pipeline.validation.task.${{ inputs.job_type }}_val", "--env", "'${{ inputs.environment }}'", "--space", "'${{ inputs.space }}'", "--object_type", "'${{ inputs.object_type }}'", "--job_type", "'${{ inputs.job_type }}'", "--test_type", "'${{ inputs.test_type }}'"]}'

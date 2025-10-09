@@ -2,8 +2,9 @@ import argparse
 import logging
 from importlib import import_module
 
-from we.pipeline.core.constant import LOG_FORMAT
-from we.pipeline.core.util.configuration_util import SubparserBuilder
+from data_pipeline.core.constant import LOG_FORMAT
+from data_pipeline.core.util.configuration_util import SubparserBuilder
+
 
 logging.basicConfig(format=LOG_FORMAT, level=logging.INFO,
                     handlers=[logging.StreamHandler()])
