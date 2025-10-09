@@ -64,6 +64,18 @@ jobs:
           python -m pip install --upgrade pip wheel
           pip install -e ".[dev]"
 
+      - name: Select deployment file (serverless fallback)
+        run: |
+          DEPLOYMENT_FILE="${{ inputs.deployment_file }}"
+          
+          if [ -f "$DEPLOYMENT_FILE" ]; then
+            echo "DEPLOYMENT_FILE=$DEPLOYMENT_FILE" >> $GITHUB_ENV
+            echo "Using provided deployment file: $DEPLOYMENT_FILE"
+          else
+            echo "❌ No suitable deployment file found"
+            exit 1
+          fi
+
       - name: Validate runtime version
         run: |
           echo "Checking available Spark versions for serverless..."
