@@ -67,6 +67,7 @@ jobs:
         run: |
           python -m pip uninstall -y databricks-cli || true
           python -m pip install -U databricks
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Verify Databricks CLI Installation
         run: |
           python -m pip show databricks
@@ -94,6 +95,15 @@ jobs:
       - name: Build Python Wheel
         run: |
           python setup.py bdist_wheel
+
+      - name: Debug PATH and databricks
+        run: |
+          echo $PATH
+          ls -l ~/.local/bin || true
+          which databricks || echo "Databricks binary missing"
+          python -m pip list | grep databricks
+
+
       - name: Deploy Databricks Bundle
         run: |
           databricks bundle deploy -t ${{ inputs.environment }}_${{ inputs.space }}  
