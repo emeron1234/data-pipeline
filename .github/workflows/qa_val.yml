@@ -58,17 +58,25 @@ jobs:
           pip install -e ".[dev]"
 
       # --- IMPORTANT FIX: Test Databricks CLI ---
-      - name: Install new Databricks CLI (v0.205)
+      - name: Install Databricks CLI via pipx
         run: |
-          echo "🔄 Installing latest Databricks CLI..."  
-          pip uninstall -y databricks-cli || true
-          pip install -U databricks
-
-          export PATH="$HOME/.local/bin:$PATH"
-          echo "✅ Installed new Databricks CLI:"
-          which databricks || true
+          python -m pip install --upgrade pipx
+          pipx ensurepath
+          pipx install databricks
+          echo "✅ Installed Databricks CLI via pipx"
           databricks version || true
-          databricks -h | head -n 10 || true
+
+      # - name: Install new Databricks CLI (v0.205)
+      #   run: |
+      #     echo "🔄 Installing latest Databricks CLI..."  
+      #     pip uninstall -y databricks-cli || true
+      #     pip install -U databricks
+
+      #     export PATH="$HOME/.local/bin:$PATH"
+      #     echo "✅ Installed new Databricks CLI:"
+      #     which databricks || true
+      #     databricks version || true
+      #     databricks -h | head -n 10 || true
 
       - name: Configure Databricks CLI
         run: |
@@ -83,6 +91,10 @@ jobs:
         run: |
           pip list | grep databricks
 
+      - name: Validate Databricks CLI
+        run: |
+          which databricks
+          databricks version
 
       - name: Deploy Bundle
         run: databricks bundle deploy -t dev_feature
