@@ -9,5 +9,10 @@
         "artifact_location": "dbfs:/Volumes/data_lake_dev/feature_artifacts/dbx_store"
       }
     }
+  },
+  "build": {
+    "python": "pip",
+    "exclude": ["venv", ".venv", ".git", "__pycache__", "*.pyc", ".pytest_cache"],
+    "include_deps": false
   }
 }

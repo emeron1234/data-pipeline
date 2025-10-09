@@ -89,6 +89,8 @@ jobs:
           dbx deploy --job=we-pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
             --deployment-file="$DEPLOYMENT_FILE" \
             --environment ${{ inputs.environment }}_${{ inputs.space }} \
+            --no-rebuild \
+            --no-package \
             --debug
       - name: Run Integration test suite for cross_platform_count
         run: |
