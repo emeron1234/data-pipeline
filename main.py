@@ -19,6 +19,9 @@ if __name__ == '__main__':
 
     # Load the modules to execute the Subparser decorator
     modules = [
+        'data_pipeline.real_estate',
+        'data_pipeline.core',
+        'data_pipeline.validation',
         'data_pipeline.validation'
     ]
     for m in modules:
