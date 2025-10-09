@@ -65,8 +65,13 @@ jobs:
       # -----------
       - name: Install Databricks CLI v0.205+
         run: |
-          pip uninstall -y databricks-cli || true  
-          pip install -U databricks
+          python -m pip uninstall -y databricks-cli || true
+          python -m pip install -U databricks
+      - name: Verify Databricks CLI Installation
+        run: |
+          python -m pip show databricks
+          which databricks || echo "Databricks CLI not in PATH"
+          databricks --version
 
       - name: Verify Databricks CLI Version
         run: |
