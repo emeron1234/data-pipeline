@@ -1,0 +1,3 @@
+[run]
+source = data_pipeline
+omit = data_pipeline/**/__init__.py, data_pipeline/**/*_task.py, data_pipeline/**/validation/**
