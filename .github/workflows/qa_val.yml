@@ -59,36 +59,55 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip wheel
+          python -m pip install --upgrade pip setuptools wheel
           pip install -e ".[dev]"
 
       # -----------
       - name: Install Databricks CLI v0.205+
         run: |
+          pip uninstall -y databricks-cli || true  
           pip install -U databricks
 
       - name: Verify Databricks CLI Version
         run: |
           databricks --version
-      - name: Build Wheel
-        run: |
-          python setup.py bdist_wheel
-      - name: Deploy Bundle
-        run: |
-          databricks bundle deploy -t dev_feature
 
       - name: Configure Databricks CLI
         run: |
-          echo "[DEFAULT]" > ~/.databrickscfg
-          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
-          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+          mkdir -p ~/.databricks
+          cat <<EOF > ~/.databricks/config
+          [DEFAULT]
+          host = $DATABRICKS_HOST
+          token = $DATABRICKS_TOKEN
+          EOF
+# echo "[DEFAULT]" > ~/.databrickscfg
+# echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+# echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+
+
+
+      - name: Build Python Wheel
+        run: |
+          python setup.py bdist_wheel
+      - name: Deploy Databricks Bundle
+        run: |
+          databricks bundle deploy -t ${{ inputs.environment }}_${{ inputs.space }}  
       # -----------
 
       - name: Run Job
         run: |
-          databricks bundle run -t dev_feature data_pipeline-rep-smoke-dev-feature-val-v1 \
-          --parameters='{"parameters": ["data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke"]}'
-
+          databricks bundle run -t ${{ inputs.environment }}_${{ inputs.space }} \
+            data_pipeline-${{ inputs.job_type }}-${{ inputs.test_type }}-${{ inputs.environment }}-${{ inputs.space }}-val-v1 \
+            --parameters '{
+              "parameters": [
+                "data_pipeline.validation.task.${{ inputs.job_type }}_val",
+                "--env", "${{ inputs.environment }}",
+                "--space", "${{ inputs.space }}",
+                "--object_type", "${{ inputs.object_type }}",
+                "--job_type", "${{ inputs.job_type }}",
+                "--test_type", "${{ inputs.test_type }}"
+              ]
+            }'
       # - name: Deploy Integration Test Suite
       #   run: |
       #     DEPLOYMENT_FILE="${{ inputs.deployment_file }}"
