@@ -84,13 +84,18 @@ long_description = (current_dir / 'README.md').read_text(encoding='utf-8')
 
 setuptools.setup(
     name="data_pipeline",
-    version="1.0.0",
+    version="1.0.1",
     author="DataVerse & DataAvengers Team",
     author_email="haziq.matlan@gmail.com",
     description="This package contains all the necessary classes and functions for data engineering framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(exclude=["**/test/**", "test_*"]),
+    entry_points={
+        'console_scripts': [
+            'data-pipeline-etl = data_pipeline.entry_point:main'
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",

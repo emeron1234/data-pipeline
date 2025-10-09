@@ -4,11 +4,18 @@ environments:
       - name: "data_pipeline-rep-smoke-dev-feature-val-v1"
         tasks:
           - task_key: "rep_dev_feature_validation_task"
-            spark_python_task:
-              python_file: "file://main.py"
+            python_wheel_task:  # Switch to this
+              package_name: "data_pipeline"
+              entry_point: "data-pipeline-etl"  # Matches setup.py
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+            
+            # spark_python_task:
+            #   python_file: "file://main.py"
+            #   parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
             # libraries: []  # Explicitly set empty libraries
+            
             environment_key: "default"  
+        
         environments:  
           - environment_key: "default"
             spec:
