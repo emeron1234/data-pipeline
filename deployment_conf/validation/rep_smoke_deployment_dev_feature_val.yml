@@ -16,5 +16,5 @@ environments:
             spark_python_task:
               python_file: "file://main.py"
               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-            libraries:
-              - whl: "dist/data_pipeline-1.0.0-py3-none-any.whl"
+            # libraries:
+            #   - whl: "dist/data_pipeline-1.0.0-py3-none-any.whl"
