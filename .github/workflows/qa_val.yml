@@ -65,7 +65,7 @@ jobs:
       # -----------
       - name: Install Databricks CLI v0.205+
         run: |
-          pip install -U "databricks-cli>=0.205.0"
+          pip install -U databricks
 
       - name: Verify Databricks CLI Version
         run: |
