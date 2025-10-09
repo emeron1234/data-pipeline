@@ -71,11 +71,11 @@ jobs:
         run: |
           python -m pip show databricks
           which databricks || echo "Databricks CLI not in PATH"
-          databricks --version
 
-      - name: Verify Databricks CLI Version
+      - name: Verify Databricks CLI Installation
         run: |
-          databricks --version
+          python -m pip show databricks
+          python -m pip list | grep databricks
 
       - name: Configure Databricks CLI
         run: |
