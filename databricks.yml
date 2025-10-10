@@ -1,24 +1,57 @@
 bundle:
-  name: "data_pipeline_bundle"  # Unique name for your bundle
+  name: "data_pipeline"
+
+# Include configuration files
+include:
+  - "deployment_conf/**/*.yml"
+
+# Workspace configuration
+workspace:
+  host: ${workspace.host}  # Auto-populated from databricks auth
 
 targets:
-  dev_feature:  # Matches your dbx environment
+  dev_feature:
+    mode: development
     workspace:
-      root_path: "/Shared/dbx/projects/data-pipeline_dev_feature_v2"  # From your MLflow experiment path in logs
-      artifact_path: "/Volumes/data_lake_dev/feature_artifacts/databricks_store"  # From your logs; for wheel uploads
+      root_path: "/Shared/dbx/projects/data-pipeline_dev_feature_v2"
+    
+    artifacts:
+      default:
+        type: whl
+        build: python setup.py bdist_wheel
+        path: ./dist/*.whl
+    
     resources:
       jobs:
-        data_pipeline-rep-smoke-dev-feature-val-v1:  # Your workflow name
+        data_pipeline-rep-smoke-dev-feature-val-v1:
+          name: "data_pipeline-rep-smoke-dev-feature-val-v1"
+          
           tasks:
             - task_key: "rep_dev_feature_validation_task"
+              # new_cluster:
+              #   spark_version: "13.3.x-scala2.12"  # Use appropriate version
+              #   node_type_id: "Standard_DS3_v2"  # Adjust for your workspace
+              #   num_workers: 1
+              #   spark_conf:
+              #     "spark.databricks.cluster.profile": "serverless"
+              
               python_wheel_task:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
-                parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-              environment_key: "default"
-          environments:
-            - environment_key: "default"
-              spec:
-                client: "1"  # Enables serverless
-                dependencies:
-                  - "dist/data_pipeline-1.0.2-py3-none-any.whl"  # Local path; DAB auto-uploads during deploy
+                parameters:
+                  - "data_pipeline.validation.task.rep_val"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--object_type"
+                  - "re"
+                  - "--job_type"
+                  - "rep"
+                  - "--test_type"
+                  - "smoke"
+              
+              libraries:
+                - whl: ../dist/*.whl  # DAB auto-uploads this
+          
+          timeout_seconds: 3600

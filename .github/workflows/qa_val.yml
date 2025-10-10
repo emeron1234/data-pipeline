@@ -57,40 +57,36 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -e ".[dev]"
 
-      # ✅ Ensure ~/.local/bin exists
-      - name: Create ~/.local/bin if missing
-        run: |
-          mkdir -p ~/.local/bin
-          echo "✅ Ensured ~/.local/bin exists"
-
-      # ✅ Install Databricks CLI using pip --user
+      # Install Databricks CLI (unified CLI for DAB)
       - name: Install Databricks CLI
         run: |
-          pip uninstall -y databricks-cli || true
-          pip install --user databricks
-          export PATH="$HOME/.local/bin:$PATH"
-          echo "✅ Installed Databricks CLI"
-          echo "PATH: $PATH"
-          ls $HOME/.local/bin || echo "Directory not found"
-          which databricks || echo "databricks not found"
-          databricks version || echo "version command failed"
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          echo "$HOME/.databrickscli" >> $GITHUB_PATH
 
-      - name: Configure Databricks CLI
+      # Configure Databricks authentication for DAB
+      - name: Configure Databricks Authentication
         run: |
-          mkdir -p ~/.databricks
-          echo '{"host": "'$DATABRICKS_HOST'", "token": "'$DATABRICKS_TOKEN'"}' > ~/.databricks/config
-          echo "✅ Databricks CLI configured"
+          databricks configure --token <<EOF
+          ${{ secrets.DATABRICKS_HOST }}
+          ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+          
+      - name: Verify Databricks CLI
+        run: |
+          databricks --version
+          databricks auth profiles
 
       - name: Build Wheel
         run: python setup.py bdist_wheel
 
+      - name: Validate Bundle Configuration
+        run: databricks bundle validate -t dev_feature
+
       - name: Deploy Bundle
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          databricks bundle deploy -t dev_feature
+        run: databricks bundle deploy -t dev_feature
 
       - name: Run Job
+        if: ${{ !inputs.skip_test }}
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           databricks bundle run -t dev_feature data_pipeline-rep-smoke-dev-feature-val-v1 \
-          --parameters='{"parameters": ["data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke"]}'
+          --pipeline-params='{"env": "dev", "space": "feature", "object_type": "re", "job_type": "rep", "test_type": "smoke"}'
