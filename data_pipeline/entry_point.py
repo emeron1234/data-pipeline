@@ -10,7 +10,9 @@ logging.basicConfig(format=LOG_FORMAT, level=logging.INFO,
                     handlers=[logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
-if __name__ == '__main__':
+
+def main():
+    """Main entry point for the data pipeline ETL."""
     parser = argparse.ArgumentParser()
 
     # Build subparsers from submodules
@@ -56,3 +58,7 @@ if __name__ == '__main__':
         function_name_in_imported_module(**command_line_args)
     else:
         function_name_in_imported_module()
+
+
+if __name__ == '__main__':
+    main()
