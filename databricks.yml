@@ -22,7 +22,7 @@ targets:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
                 parameters:
-                  - "data_pipeline.real_estate.task.rep_val"
+                  - "data_pipeline.real_estate.task.rep"
                   - "--env"
                   - "dev"
                   - "--space"
