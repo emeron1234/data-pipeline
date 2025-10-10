@@ -1,26 +1,31 @@
-environments:
-  dev_feature:
-    workflows:
-      - name: "data_pipeline-rep-smoke-dev-feature-val-v1"
-        tasks:
-          - task_key: "rep_dev_feature_validation_task"
-            python_wheel_task:  # Switch to this
-              package_name: "data_pipeline"
-              entry_point: "data-pipeline-etl"  # Matches setup.py
-              parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-
-            # spark_python_task:
-            #   python_file: "file://main.py"
-            #   parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
-            # libraries: []  # Explicitly set empty libraries         
-            environment_key: "default"  
-        
-        environments:  
-          - environment_key: "default"
-            spec:
-              client: "1"  # Required for serverless
-              dependencies:  # Add setup.py deps here if needed (e.g., if ModuleNotFound recurs)
-                - "dist/data_pipeline-1.0.1-py3-none-any.whl"  # dbx uploads and rewrites to remote path
-                - "importlib"
-                - "argparse"
-                - "logging"  # Usually built-in, but add any custom
+# ⚠️ DEPRECATED: This file uses the old dbx format and is no longer used
+# 
+# This configuration has been migrated to Databricks Asset Bundles (DAB) format
+# and is now defined in the main databricks.yml file at the project root.
+#
+# Migration Date: October 10, 2025
+# New Location: /databricks.yml -> targets.dev_feature.resources.jobs
+#
+# This file is kept for reference only and will be removed in a future cleanup.
+# DO NOT USE THIS FILE FOR DEPLOYMENTS.
+#
+# ---
+# Old dbx format (no longer supported):
+# ---
+# environments:
+#   dev_feature:
+#     workflows:
+#       - name: "data_pipeline-rep-smoke-dev-feature-val-v1"
+#         tasks:
+#           - task_key: "rep_dev_feature_validation_task"
+#             python_wheel_task:
+#               package_name: "data_pipeline"
+#               entry_point: "data-pipeline-etl"
+#               parameters: [ "data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--zone", "raw", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke" ]
+#             environment_key: "default"
+#         environments:
+#           - environment_key: "default"
+#             spec:
+#               client: "1"
+#               dependencies:
+#                 - "dist/data_pipeline-1.0.1-py3-none-any.whl"

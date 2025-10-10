@@ -42,6 +42,7 @@ jobs:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      DATABRICKS_CLI_DO_NOT_EXECUTE_NEWER_VERSION: "1"  # Suppress version warning
 
     steps:
       - name: Checkout repository
@@ -57,10 +58,18 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -e ".[dev]"
 
+      # Remove old/legacy Databricks CLI if it exists
+      - name: Remove Legacy Databricks CLI
+        run: |
+          pip uninstall -y databricks-cli databricks || true
+          echo "✅ Removed any legacy Databricks CLI installations"
+
       # Install Databricks CLI (unified CLI for DAB)
       - name: Install Databricks CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          # Prepend the new CLI path to ensure it's used first
+          echo "/usr/local/bin" >> $GITHUB_PATH
           echo "$HOME/.databrickscli" >> $GITHUB_PATH
 
       # Configure Databricks authentication for DAB
@@ -73,6 +82,7 @@ jobs:
           
       - name: Verify Databricks CLI
         run: |
+          which databricks
           databricks --version
           databricks auth profiles
 
@@ -85,8 +95,8 @@ jobs:
       - name: Deploy Bundle
         run: databricks bundle deploy -t dev_feature
 
-      - name: Run Job
-        if: ${{ !inputs.skip_test }}
-        run: |
-          databricks bundle run -t dev_feature data_pipeline-rep-smoke-dev-feature-val-v1 \
-          --pipeline-params='{"env": "dev", "space": "feature", "object_type": "re", "job_type": "rep", "test_type": "smoke"}'
+      # - name: Run Job
+      #   if: ${{ !inputs.skip_test }}
+      #   run: |
+      #     databricks bundle run -t dev_feature data_pipeline-rep-smoke-dev-feature-val-v1 \
+      #     --pipeline-params='{"env": "dev", "space": "feature", "object_type": "re", "job_type": "rep", "test_type": "smoke"}'

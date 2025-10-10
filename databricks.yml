@@ -1,10 +1,6 @@
 bundle:
   name: "data_pipeline"
 
-# Include configuration files
-include:
-  - "deployment_conf/**/*.yml"
-
 # Workspace configuration
 workspace:
   host: ${workspace.host}  # Auto-populated from databricks auth
@@ -28,12 +24,7 @@ targets:
           
           tasks:
             - task_key: "rep_dev_feature_validation_task"
-              # new_cluster:
-              #   spark_version: "13.3.x-scala2.12"  # Use appropriate version
-              #   node_type_id: "Standard_DS3_v2"  # Adjust for your workspace
-              #   num_workers: 1
-              #   spark_conf:
-              #     "spark.databricks.cluster.profile": "serverless"
+              job_cluster_key: "default_cluster"
               
               python_wheel_task:
                 package_name: "data_pipeline"
@@ -53,5 +44,15 @@ targets:
               
               libraries:
                 - whl: ../dist/*.whl  # DAB auto-uploads this
+          
+          # job_clusters:
+          #   - job_cluster_key: "default_cluster"
+          #     new_cluster:
+          #       spark_version: "13.3.x-scala2.12"
+          #       node_type_id: "Standard_DS3_v2"
+          #       num_workers: 1
+          #       spark_conf:
+          #         "spark.databricks.cluster.profile": "serverless"
+          #         "spark.master": "local[*, 4]"
           
           timeout_seconds: 3600

@@ -135,7 +135,44 @@ Error: Process completed with exit code 127.
 
 ---
 
-### **5. Improved `databricks.yml` Structure**
+### **5. Fixed Multiple CLI Versions Conflict**
+
+**Problem:**
+```
+Databricks CLI v0.272.0 found at /usr/local/bin/databricks
+Your current $PATH prefers running CLI v0.17.8 at /opt/hostedtoolcache/Python/3.10.18/x64/bin/databricks
+```
+
+**Solution:**
+```yaml
+jobs:
+  qa-deploy-config:
+    env:
+      DATABRICKS_CLI_DO_NOT_EXECUTE_NEWER_VERSION: "1"  # Suppress warning
+
+    steps:
+      - name: Remove Legacy Databricks CLI
+        run: |
+          pip uninstall -y databricks-cli databricks || true
+
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          # Prepend new CLI path to ensure it's used first
+          echo "/usr/local/bin" >> $GITHUB_PATH
+          echo "$HOME/.databrickscli" >> $GITHUB_PATH
+```
+
+**Why This Works:**
+- Removes old pip-installed CLI versions
+- Installs only the unified CLI via official script
+- Prepends `/usr/local/bin` to PATH (where new CLI is installed)
+- Sets environment variable to suppress version check warnings
+- Ensures consistent CLI version across all steps
+
+---
+
+### **6. Improved `databricks.yml` Structure**
 
 **Key Changes:**
 - Added proper `mode: development` for dev environments
@@ -277,7 +314,7 @@ If you have existing deployments using legacy methods:
 
 ---
 
-## 🛡️ Prevention Strategies
+## � Troubleshooting
 
 ### **To Avoid Similar Issues:**
 
@@ -300,6 +337,42 @@ If you have existing deployments using legacy methods:
 5. **Monitor deployment logs**
    - Set up notifications for failed deployments
    - Review logs regularly
+
+6. **Avoid multiple CLI installations**
+   - Don't install via pip AND official installer
+   - Remove legacy `databricks-cli` package
+   - Use only the unified Databricks CLI
+
+---
+
+## 🐛 Common Issues After Migration
+
+### **Issue: Multiple CLI Versions Warning**
+
+**Error:**
+```
+Databricks CLI v0.272.0 found at /usr/local/bin/databricks
+Your current $PATH prefers running CLI v0.17.8 at /opt/hostedtoolcache/Python/3.10.18/x64/bin/databricks
+```
+
+**Cause:** Both legacy and unified CLI are installed
+
+**Solution:**
+```yaml
+# Remove old CLI
+- name: Remove Legacy Databricks CLI
+  run: pip uninstall -y databricks-cli databricks || true
+
+# Set environment variable to suppress warning
+env:
+  DATABRICKS_CLI_DO_NOT_EXECUTE_NEWER_VERSION: "1"
+
+# Ensure new CLI path is first in PATH
+- name: Install Databricks CLI
+  run: |
+    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+    echo "/usr/local/bin" >> $GITHUB_PATH
+```
 
 ---
 
