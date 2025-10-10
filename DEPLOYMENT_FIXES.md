@@ -180,9 +180,13 @@ jobs:
 - Specified cluster configuration explicitly
 - Removed deprecated `environments` configuration
 - Fixed wheel path references
+- **Removed invalid `workspace.host` interpolation**
 
 **Before:**
 ```yaml
+bundle:
+  name: "data_pipeline_bundle"
+
 targets:
   dev_feature:
     workspace:
@@ -207,6 +211,11 @@ targets:
 
 **After:**
 ```yaml
+bundle:
+  name: "data_pipeline"
+
+# workspace.host is NOT specified here - uses DATABRICKS_HOST env var
+
 targets:
   dev_feature:
     mode: development  # ✅ Proper mode
@@ -225,17 +234,78 @@ targets:
           name: "data_pipeline-rep-smoke-dev-feature-val-v1"
           tasks:
             - task_key: "rep_dev_feature_validation_task"
-              new_cluster:  # ✅ Explicit cluster config
-                spark_version: "13.3.x-scala2.12"
-                node_type_id: "Standard_DS3_v2"
-                num_workers: 1
+              job_cluster_key: "default_cluster"  # ✅ Reference to cluster
               python_wheel_task:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
                 parameters: [...]
               libraries:  # ✅ Correct location for dependencies
                 - whl: ../dist/*.whl
+          
+          job_clusters:  # ✅ Cluster definition
+            - job_cluster_key: "default_cluster"
+              new_cluster:
+                spark_version: "13.3.x-scala2.12"
+                node_type_id: "Standard_DS3_v2"
+                num_workers: 1
 ```
+
+**Why This Works:**
+- `workspace.host` is automatically detected from `DATABRICKS_HOST` environment variable
+- No need for `${workspace.host}` interpolation (which causes errors)
+- Proper job cluster configuration for serverless execution
+- Clean separation between bundle metadata and target-specific settings
+
+---
+
+### **7. Fixed workspace.host Interpolation Error**
+
+**Problem:**
+```
+Error: failed during request visitor: parse "https://${workspace.host}": invalid character "{" in host name
+Warning: Variable interpolation is not supported for fields that configure authentication
+```
+
+**Cause:**
+- Used `workspace.host: ${workspace.host}` in databricks.yml
+- DAB doesn't support variable interpolation for authentication fields
+- The host should come from environment variables or CLI authentication
+
+**Solution:**
+Remove the workspace section at bundle level:
+
+**Before:**
+```yaml
+bundle:
+  name: "data_pipeline"
+
+workspace:
+  host: ${workspace.host}  # ❌ Invalid interpolation
+
+targets:
+  dev_feature:
+    workspace:
+      root_path: "/Shared/dbx/projects/..."
+```
+
+**After:**
+```yaml
+bundle:
+  name: "data_pipeline"
+
+# No workspace.host here - uses DATABRICKS_HOST env var ✅
+
+targets:
+  dev_feature:
+    workspace:
+      root_path: "/Shared/dbx/projects/..."
+```
+
+**Why This Works:**
+- DAB automatically uses `DATABRICKS_HOST` from environment variables
+- Authentication is configured via `databricks configure --token`
+- No need to specify host in the bundle file
+- Workspace host is determined by the authenticated profile
 
 ---
 

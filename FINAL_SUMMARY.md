@@ -57,6 +57,28 @@ Your current $PATH prefers running CLI v0.17.8 at /opt/hostedtoolcache/Python/3.
 
 ---
 
+### **Issue #4: workspace.host Interpolation Error**
+**Status:** ✅ **FIXED**
+
+**Problem:**
+```
+Error: failed during request visitor: parse "https://${workspace.host}": invalid character "{" in host name
+Warning: Variable interpolation is not supported for fields that configure authentication
+```
+
+**Cause:**
+- Used `workspace.host: ${workspace.host}` in databricks.yml
+- DAB doesn't support variable interpolation for authentication fields
+
+**Solution:**
+- Removed `workspace.host` from bundle configuration
+- Let DAB automatically use `DATABRICKS_HOST` environment variable
+- Workspace host determined by authenticated CLI profile
+
+See [WORKSPACE_HOST_FIX.md](./WORKSPACE_HOST_FIX.md) for detailed explanation.
+
+---
+
 ## 📁 Files Modified
 
 | File | Status | Changes |
@@ -74,6 +96,7 @@ Your current $PATH prefers running CLI v0.17.8 at /opt/hostedtoolcache/Python/3.
 | `MIGRATION_DBX_TO_DAB.md` | Migration guide from dbx to DAB format |
 | `QUICK_REFERENCE.md` | Quick command reference for deployments |
 | `CLI_VERSION_FIX.md` | Specific fix for CLI version conflicts |
+| `WORKSPACE_HOST_FIX.md` | Fix for workspace.host interpolation error |
 | `FINAL_SUMMARY.md` | This file - overall summary |
 
 ---
@@ -121,13 +144,15 @@ jobs:
 ❌ CLI installation fails or uses wrong version  
 ❌ Configuration validation fails with format errors  
 ❌ Multiple CLI version warnings  
+❌ workspace.host interpolation error  
 ❌ Deployment fails with exit code 127 or 1  
 ❌ Jobs not created or run incorrectly  
 
 ### **After Fixes:**
 ✅ Correct CLI version installed and verified  
-✅ Clean bundle validation (no errors)  
+✅ Clean bundle validation (no errors or warnings)  
 ✅ No CLI version warnings  
+✅ Workspace host resolved from environment variables  
 ✅ Successful deployment to Databricks workspace  
 ✅ Jobs created/updated with proper configuration  
 ✅ Jobs can be run successfully  
@@ -285,11 +310,12 @@ If you encounter any issues after applying these fixes:
 
 ## 🎉 Summary
 
-All three major issues have been identified and fixed:
+All four major issues have been identified and fixed:
 
 1. ✅ CLI installation and PATH issues → Fixed with official script + PATH management
 2. ✅ Configuration format conflicts → Fixed by removing old dbx files
 3. ✅ Multiple CLI versions warning → Fixed by cleanup + environment variable
+4. ✅ workspace.host interpolation error → Fixed by removing invalid interpolation
 
 Your CI/CD pipeline is now:
 - ✅ Using proper Databricks Asset Bundle (DAB) format

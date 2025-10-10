@@ -13,6 +13,7 @@ This package contains all the necessary classes and functions for the data engin
 ### **Troubleshooting & Fixes**
 - 🔧 [Deployment Fixes](./DEPLOYMENT_FIXES.md) - Common issues and solutions
 - 🖥️ [CLI Version Fix](./CLI_VERSION_FIX.md) - Multiple CLI versions conflict resolution
+- 🌐 [Workspace Host Fix](./WORKSPACE_HOST_FIX.md) - workspace.host interpolation error
 - 📊 [Final Summary](./FINAL_SUMMARY.md) - Complete summary of all fixes applied
 
 ### **Migration & Setup**

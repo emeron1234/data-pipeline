@@ -1,9 +1,8 @@
 bundle:
   name: "data_pipeline"
 
-# Workspace configuration
-workspace:
-  host: ${workspace.host}  # Auto-populated from databricks auth
+# Workspace configuration is handled by DATABRICKS_HOST environment variable
+# No need to specify workspace.host here - it's auto-detected from authentication
 
 targets:
   dev_feature:
