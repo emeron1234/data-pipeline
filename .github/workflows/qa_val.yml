@@ -108,11 +108,6 @@ jobs:
         run: |
           pip list | grep databricks
 
-      - name: Validate Databricks CLI
-        run: |
-          which databricks
-          databricks version
-
       - name: Deploy Bundle
         run: databricks bundle deploy -t dev_feature
 
