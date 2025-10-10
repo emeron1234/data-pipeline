@@ -25,16 +25,17 @@ if GH_TOKEN is None:
 
 PACKAGE_REQUIREMENTS = [
     'nameparser==1.1.2',
-    'pyspark==3.3.0',
+    # PySpark is provided by Databricks runtime - don't include in wheel
+    # 'pyspark==3.3.0',
     'smartystreets_python_sdk==4.16.1',
     'PyYAML==6.0',
     'python-dotenv==1.0.0',
     "boto3==1.34.51",
     "pysftp==0.2.9",
-    "boto3==1.34.51",
     "pgpy==0.6.0",
     "jellyfish==1.1.0",
-    "graphframes==0.6",
+    # GraphFrames depends on PySpark - also excluded for serverless
+    # "graphframes==0.6",
     "pymsteams==0.2.3",
     "paramiko==2.12.0"
 ]
