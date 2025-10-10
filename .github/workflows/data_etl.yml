@@ -1,4 +1,4 @@
-name: QA Validation Workflow Deployment
+name: Data ETL Workflow Deployment
 
 on:
   workflow_dispatch:
@@ -35,14 +35,6 @@ on:
           - rep
         default: rep
         required: true
-      test_type:
-        type: choice
-        description: Test type
-        options:
-          - smoke
-          - regression
-        default: smoke
-        required: true
       deploy:
         type: boolean
         description: Deploy a workflow before launching it?
@@ -52,13 +44,12 @@ permissions:
   contents: read
 
 jobs:
-  qa-workflow-deploy-and-launch:
-    uses: ./.github/workflows/qa_launch_workflow.yml
+  workflow-deploy-and-launch:
+    uses: ./.github/workflows/data_etl_launch_workflow.yml
     with:
       environment: ${{ inputs.environment }}
       space: ${{ inputs.space }}
       object_type: ${{ inputs.object_type }}
       job_type: ${{ inputs.job_type }}
-      test_type: ${{ inputs.test_type }}
       deploy: ${{ inputs.deploy }}
     secrets: inherit

@@ -1,0 +1,8 @@
+{
+  "catalog": "data_lake_dev",
+  "raw_database": "raw",
+  "bronze_database": "bronze",
+  "silver_database": "silver",
+  "gold_database": "gold",
+  "dbx_region": "us-east-2"
+}

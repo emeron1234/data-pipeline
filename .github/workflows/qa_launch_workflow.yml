@@ -1,0 +1,106 @@
+name: QA Validation Job
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      space:
+        type: string
+        required: true
+      object_type:
+        type: string
+        required: true
+      job_type:
+        type: string
+        required: true
+      test_type:
+        type: string
+        required: true
+      deploy:
+        type: boolean
+        required: true
+      skip_test:
+        type: boolean
+      deployment_file:
+        type: string
+        required: true
+    secrets:
+      DATABRICKS_HOST:
+        required: true
+      DATABRICKS_TOKEN:
+        required: true
+      GH_TOKEN:
+        required: true
+
+jobs:
+  qa-deploy-config:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}_${{ inputs.space }}
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      DATABRICKS_CLI_DO_NOT_EXECUTE_NEWER_VERSION: "1"  # Suppress version warning
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e ".[dev]"
+
+      # Remove old/legacy Databricks CLI if it exists
+      - name: Remove Legacy Databricks CLI
+        run: |
+          pip uninstall -y databricks-cli databricks || true
+          echo "✅ Removed any legacy Databricks CLI installations"
+
+      # Install Databricks CLI (unified CLI for DAB)
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          # Prepend the new CLI path to ensure it's used first
+          echo "/usr/local/bin" >> $GITHUB_PATH
+          echo "$HOME/.databrickscli" >> $GITHUB_PATH
+
+      # Configure Databricks authentication for DAB
+      - name: Configure Databricks Authentication
+        run: |
+          databricks configure --token <<EOF
+          ${{ secrets.DATABRICKS_HOST }}
+          ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+          
+      - name: Verify Databricks CLI
+        run: |
+          which databricks
+          databricks --version
+          databricks auth profiles
+
+      - name: Build Wheel
+        run: python setup.py bdist_wheel
+
+      - name: Validate Bundle Configuration
+        run: databricks bundle validate -t ${{ inputs.environment }}_${{ inputs.space }}
+
+      - name: Deploy Bundle to Databricks
+        run: databricks bundle deploy -t ${{ inputs.environment }}_${{ inputs.space }}
+
+      - name: Run Bundle Job
+        if: ${{ !inputs.skip_test }}
+        run: |
+          databricks bundle run -t ${{ inputs.environment }}_${{ inputs.space }} data_pipeline-rep-smoke-dev-feature-val-v1 \
+            --python-named-params env=${{ inputs.environment }} \
+            --python-named-params space=${{ inputs.space }} \
+            --python-named-params object_type=${{ inputs.object_type }} \
+            --python-named-params job_type=${{ inputs.job_type }} \
+            --python-named-params test_type=${{ inputs.test_type }}

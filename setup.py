@@ -25,16 +25,17 @@ if GH_TOKEN is None:
 
 PACKAGE_REQUIREMENTS = [
     'nameparser==1.1.2',
-    'pyspark==3.3.0',
+    # PySpark is provided by Databricks runtime - don't include in wheel
+    # 'pyspark==3.3.0',
     'smartystreets_python_sdk==4.16.1',
     'PyYAML==6.0',
     'python-dotenv==1.0.0',
     "boto3==1.34.51",
     "pysftp==0.2.9",
-    "boto3==1.34.51",
     "pgpy==0.6.0",
     "jellyfish==1.1.0",
-    "graphframes==0.6",
+    # GraphFrames depends on PySpark - also excluded for serverless
+    # "graphframes==0.6",
     "pymsteams==0.2.3",
     "paramiko==2.12.0"
 ]
@@ -45,7 +46,7 @@ DEV_REQUIREMENTS = [
     'smartystreets_python_sdk==4.16.1',
     # 'dbx>=0.7,<0.8',
     # Make sure use the latest version of the dbx
-    'dbx==0.8.19',
+    'dbx>=0.8.19',
     'click==8.2.1',
     'typer==0.7.0',
     'requests>=2.28.0,<3.0.0',
@@ -84,13 +85,18 @@ long_description = (current_dir / 'README.md').read_text(encoding='utf-8')
 
 setuptools.setup(
     name="data_pipeline",
-    version="1.0.0",
+    version="1.0.1",
     author="DataVerse & DataAvengers Team",
     author_email="haziq.matlan@gmail.com",
     description="This package contains all the necessary classes and functions for data engineering framework",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(exclude=["**/test/**", "test_*"]),
+    entry_points={
+        'console_scripts': [
+            'data-pipeline-etl = data_pipeline.entry_point:main' # Set as entry point for ETL - need to be insiden `data_pipeline` package
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
@@ -102,7 +108,7 @@ setuptools.setup(
     extras_require={'dev': DEV_REQUIREMENTS},
     include_package_data=True,
     package_data={
-        'we.pipeline.core.validation.config': ['*.csv', '*.json'],
-        'we.pipeline.core.validation.yml_query': ["**/*.yml", "**/*.yaml"]
+        'data_pipeline.core.validation.config': ['*.csv', '*.json'],
+        'data_pipeline.core.validation.yml_query': ["**/*.yml", "**/*.yaml"]
     }
 )

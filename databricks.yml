@@ -1,0 +1,76 @@
+# Configuration file for **Databricks Asset Bundles (DAB)**, which is the modern approach for deploying and managing Databricks resources
+
+bundle:
+  name: "data_pipeline"
+
+targets:
+  dev_feature:
+    mode: development
+    workspace:
+      # `${bundle.name}`: `data_pipeline`, `${bundle.target}`: `dev_feature`
+      root_path: "~/.bundle/${bundle.name}/${bundle.target}" 
+    
+    resources:
+      jobs:
+        data-etl-pipeline:
+          name: "real_estate_etl"
+          tasks:
+            - task_key: "re_dev_feature_task"
+              environment_key: "serverless_env"
+              
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters:
+                  - "data_pipeline.real_estate.task.rep_val"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--object_type"
+                  - "re"
+                  - "--job_type"
+                  - "rep"
+                  - "--test_type"
+                  - "smoke"
+          
+          # Serverless environment config (serverless, libraries go in environments.spec.dependencies)
+          environments:
+            - environment_key: "serverless_env"
+              spec:
+                client: "1"  # Required for serverless compute
+                dependencies:
+                  - ./dist/*.whl  # Wheel library specified here for serverless
+          timeout_seconds: 3600
+
+        data_pipeline-rep-smoke-dev-feature-val-v1-alt:
+          name: "data_pipeline-rep-smoke-dev-feature-val-v1-alt"
+          
+          tasks:
+            - task_key: "rep_dev_feature_validation_task"
+              environment_key: "serverless_env"
+              
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters:
+                  - "data_pipeline.validation.task.rep_val"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--object_type"
+                  - "re"
+                  - "--job_type"
+                  - "rep"
+                  - "--test_type"
+                  - "smoke"
+          
+          # Serverless environment config (serverless, libraries go in environments.spec.dependencies)
+          environments:
+            - environment_key: "serverless_env"
+              spec:
+                client: "1"  # Required for serverless compute
+                dependencies:
+                  - ./dist/*.whl  # Wheel library specified here for serverless
+          timeout_seconds: 3600

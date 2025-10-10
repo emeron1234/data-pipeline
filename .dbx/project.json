@@ -1,0 +1,18 @@
+{
+  "environments": {
+    "dev_feature": {
+      "profile": "DEFAULT",
+      "workspace_dir": "/Shared/dbx/projects/data-pipeline_dev_feature_v2",
+      "artifact_location": "dbfs:/Volumes/data_lake_dev/feature_artifacts/dbx_store",
+      "properties": {
+        "workspace_directory": "/Shared/dbx/projects/data-pipeline_dev_feature_v2",
+        "artifact_location": "dbfs:/Volumes/data_lake_dev/feature_artifacts/dbx_store"
+      }
+    }
+  },
+  "build": {
+    "python": "pip",
+    "exclude": ["venv", ".venv", ".git", "__pycache__", "*.pyc", ".pytest_cache"],
+    "include_deps": false
+  }
+}

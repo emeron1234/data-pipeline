@@ -3,8 +3,8 @@ from datetime import datetime
 from re import match
 from typing import Text
 
-from we.pipeline.core import environments, spaces
-from we.pipeline.core.util.configuration_util import SubparserBuilder
+from data_pipeline.core.constant import environments, spaces
+from data_pipeline.core.util.configuration_util import SubparserBuilder
 
 
 @SubparserBuilder
@@ -32,7 +32,7 @@ def build_subparsers(subparsers) -> list[ArgumentParser]:
     test_types = ['smoke', 'regression']
     zone = ['raw', 'bronze', 'silver']
 
-    task = 'we.pipeline.validation.task.rep_val'
+    task = 'data_pipeline.validation.task.rep_val'
     parser = subparsers.add_parser(task)
     parser.set_defaults(command=task)
     parser.add_argument('-b', '--bucket', help='S3 bucket')
