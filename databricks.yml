@@ -10,11 +10,12 @@ targets:
     workspace:
       root_path: "~/.bundle/${bundle.name}/${bundle.target}"
     
-    artifacts:
-      default:
-        type: whl
-        build: python setup.py bdist_wheel
-        path: ./dist
+    # Note: Wheel is built by GitHub Actions before DAB runs
+    # artifacts:
+    #   default:
+    #     type: whl
+    #     build: python setup.py bdist_wheel
+    #     path: ./dist
     
     resources:
       jobs:
