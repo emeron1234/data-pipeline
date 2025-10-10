@@ -42,20 +42,13 @@ targets:
                   - "--test_type"
                   - "smoke"
               
-              libraries:
-                - whl: ./dist/*.whl  # DAB auto-uploads this
+              # Note: For serverless, libraries go in environments.spec.dependencies, not here
           
           # Serverless environment configuration
           environments:
             - environment_key: "serverless_env"
               spec:
                 dependencies:
-                  - ./dist/*.whl
-          # environments:
-          #   - environment_key: "default"
-          #     spec:
-          #       client: "1"  # Enables serverless
-          #       dependencies:
-          #         - "dist/data_pipeline-1.0.2-py3-none-any.whl"
+                  - ./dist/*.whl  # Wheel library specified here for serverless
           
           timeout_seconds: 3600
