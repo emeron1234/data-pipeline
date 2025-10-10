@@ -11,8 +11,10 @@ logging.basicConfig(format=LOG_FORMAT, level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
-def main():
-    """Main entry point for the data pipeline ETL."""
+def main(): 
+    """ Main entry point for the data pipeline ETL.
+    set as function wrapper for console scripts.
+    """
     parser = argparse.ArgumentParser()
 
     # Build subparsers from submodules
@@ -23,7 +25,6 @@ def main():
     modules = [
         'data_pipeline.real_estate',
         'data_pipeline.core',
-        'data_pipeline.validation',
         'data_pipeline.validation'
     ]
     for m in modules:
@@ -31,8 +32,6 @@ def main():
 
     for build_fcn in SubparserBuilder.decoratees():
         build_fcn(subparsers)
-
-    # Parse CLI with the parser
 
     namespace, extra = parser.parse_known_args()
     logger.info(f"namespace: {namespace}")
@@ -42,7 +41,6 @@ def main():
     etl_task_name = command_line_args["command"]
     logger.info(f"ETL task name: {etl_task_name}")
 
-    # import module
     mod = import_module(etl_task_name)
     # Get the function in that imported module
     # etl_process is the function in the imported module

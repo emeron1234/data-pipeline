@@ -8,17 +8,7 @@ This package contains all the necessary classes and functions for the data engin
 
 ### **Getting Started**
 - 🚀 [Quick Reference](./QUICK_REFERENCE.md) - Common commands and quick start guide
-- 🏗️ [CI/CD Architecture](./CICD_ARCHITECTURE.md) - Complete architecture documentation
-
-### **Troubleshooting & Fixes**
-- 🔧 [Deployment Fixes](./DEPLOYMENT_FIXES.md) - Common issues and solutions
-- 🖥️ [CLI Version Fix](./CLI_VERSION_FIX.md) - Multiple CLI versions conflict resolution
-- 🌐 [Workspace Host Fix](./WORKSPACE_HOST_FIX.md) - workspace.host interpolation error
-- 📊 [Final Summary](./FINAL_SUMMARY.md) - Complete summary of all fixes applied
-
-### **Migration & Setup**
-- 🔄 [Migration Guide](./MIGRATION_DBX_TO_DAB.md) - dbx to DAB migration guide
-- 📐 [Architecture Diagram](./ARCHITECTURE_DIAGRAM.md) - Visual architecture reference
+- 🏗️ [CI/CD Architecture](./reference_files/CICD_ARCHITECTURE.md) - Complete architecture documentation
 
 ---
 
@@ -58,7 +48,6 @@ data-pipeline/
 │   ├── core/
 │   ├── real_estate/
 │   └── validation/
-├── deployment_conf/            # Legacy configs (deprecated)
 ├── databricks.yml              # DAB configuration (MAIN)
 ├── setup.py                    # Python package setup
 └── Documentation files         # See index above
@@ -84,7 +73,7 @@ data-pipeline/
 - ✅ Resolved configuration format conflicts
 - ✅ Eliminated multiple CLI version warnings
 
-See [FINAL_SUMMARY.md](./FINAL_SUMMARY.md) for complete details.
+See [FINAL_SUMMARY.md](./reference_files/FINAL_SUMMARY.md) for complete details.
 
 ---
 
@@ -107,15 +96,3 @@ For issues or questions:
 - Contact DataVerse & DataAvengers Team
 
 ---
-
-## 📄 License
-
-MIT License
-
----
-
-**Maintained By**: DataVerse & DataAvengers Team  
-**Email**: haziq.matlan@gmail.com  
-**Version**: 1.0.1  
-**Last Updated**: October 10, 2025
-A data pipeline where it would perform any data transformation and on top of it, include data validation

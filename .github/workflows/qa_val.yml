@@ -90,12 +90,12 @@ jobs:
         run: python setup.py bdist_wheel
 
       - name: Validate Bundle Configuration
-        run: databricks bundle validate -t dev_feature
+        run: databricks bundle validate -t ${{ inputs.environment }}_${{ inputs.space }}
 
-      - name: Deploy Bundle
-        run: databricks bundle deploy -t dev_feature
+      - name: Deploy Bundle to Databricks
+        run: databricks bundle deploy -t ${{ inputs.environment }}_${{ inputs.space }}
 
-      - name: Run Job
+      - name: Run Bundle Job
         if: ${{ !inputs.skip_test }}
         run: |
           databricks bundle run -t ${{ inputs.environment }}_${{ inputs.space }} data_pipeline-rep-smoke-dev-feature-val-v1 \

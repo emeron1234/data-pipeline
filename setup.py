@@ -94,7 +94,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["**/test/**", "test_*"]),
     entry_points={
         'console_scripts': [
-            'data-pipeline-etl = data_pipeline.entry_point:main'
+            'data-pipeline-etl = data_pipeline.entry_point:main' # Set as entry point for ETL - need to be insiden `data_pipeline` package
         ]
     },
     classifiers=[

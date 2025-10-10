@@ -242,9 +242,8 @@ databricks bundle summary -t dev_feature
 ## 🔗 Quick Links
 
 - [databricks.yml](./databricks.yml) - Main bundle configuration
-- [CICD_ARCHITECTURE.md](./CICD_ARCHITECTURE.md) - Full architecture docs
-- [DEPLOYMENT_FIXES.md](./DEPLOYMENT_FIXES.md) - Common issues & fixes
-- [MIGRATION_DBX_TO_DAB.md](./MIGRATION_DBX_TO_DAB.md) - Migration guide
+- [CICD_ARCHITECTURE.md](./reference_files/CICD_ARCHITECTURE.md) - Full architecture docs
+- [MIGRATION_DBX_TO_DAB.md](./reference_files/MIGRATION_DBX_TO_DAB.md) - Migration guide
 
 ---
 
