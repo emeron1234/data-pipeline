@@ -24,6 +24,7 @@ targets:
           
           tasks:
             - task_key: "rep_dev_feature_validation_task"
+              environment_key: "serverless_env"
               
               python_wheel_task:
                 package_name: "data_pipeline"
@@ -44,6 +45,17 @@ targets:
               libraries:
                 - whl: ./dist/*.whl  # DAB auto-uploads this
           
-          # Use serverless compute (no job_clusters needed)
+          # Serverless environment configuration
+          environments:
+            - environment_key: "serverless_env"
+              spec:
+                dependencies:
+                  - ./dist/*.whl
+          # environments:
+          #   - environment_key: "default"
+          #     spec:
+          #       client: "1"  # Enables serverless
+          #       dependencies:
+          #         - "dist/data_pipeline-1.0.2-py3-none-any.whl"
           
           timeout_seconds: 3600
