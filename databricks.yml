@@ -8,7 +8,7 @@ targets:
   dev_feature:
     mode: development
     workspace:
-      root_path: "/Shared/dbx/projects/data-pipeline_dev_feature_v2"
+      root_path: "~/.bundle/${bundle.name}/${bundle.target}"
     
     artifacts:
       default:
