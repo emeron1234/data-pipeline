@@ -98,6 +98,9 @@ jobs:
       - name: Run Job
         if: ${{ !inputs.skip_test }}
         run: |
-          databricks bundle run -t ${{ inputs.environment }}_${{ inputs.space }} \
-          [dev haziq_matlan] data_pipeline-rep-smoke-dev-feature-val-v1 \
-          --pipeline-params='{"env": "dev", "space": "feature", "object_type": "re", "job_type": "rep", "test_type": "smoke"}'
+          databricks bundle run -t ${{ inputs.environment }}_${{ inputs.space }} data_pipeline-rep-smoke-dev-feature-val-v1 \
+            --python-named-params env=${{ inputs.environment }} \
+            --python-named-params space=${{ inputs.space }} \
+            --python-named-params object_type=${{ inputs.object_type }} \
+            --python-named-params job_type=${{ inputs.job_type }} \
+            --python-named-params test_type=${{ inputs.test_type }}
