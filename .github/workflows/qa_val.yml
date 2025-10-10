@@ -61,4 +61,5 @@ jobs:
       job_type: ${{ inputs.job_type }}
       test_type: ${{ inputs.test_type }}
       deploy: ${{ inputs.deploy }}
+      deployment_file: ./deployment_conf/validation/${{ inputs.job_type }}_${{ inputs.test_type }}_deployment_${{ inputs.environment }}_${{ inputs.space }}_val.yml
     secrets: inherit
