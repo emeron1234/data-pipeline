@@ -57,44 +57,24 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -e ".[dev]"
 
-      # --- IMPORTANT FIX: Test Databricks CLI ---
-      # - name: Install new Databricks CLI (v0.205)
-      #   run: |
-      #     echo "🔄 Installing latest Databricks CLI..."  
-      #     pip uninstall -y databricks-cli || true
-      #     pip install -U databricks
-
-      #     export PATH="$HOME/.local/bin:$PATH"
-      #     echo "✅ Installed new Databricks CLI:"
-      #     which databricks || true
-      #     databricks version || true
-      #     databricks -h | head -n 10 || true
-      - name: Ensure ~/.local/bin exists
+      # ✅ Ensure ~/.local/bin exists
+      - name: Create ~/.local/bin if missing
         run: |
           mkdir -p ~/.local/bin
-          echo "Created ~/.local/bin"
+          echo "✅ Ensured ~/.local/bin exists"
 
-
-      - name: Install Databricks CLI (v0.200+)
+      # ✅ Install Databricks CLI using pip --user
+      - name: Install Databricks CLI
         run: |
           pip uninstall -y databricks-cli || true
           pip install --user databricks
-
-          echo "✅ Installed Databricks CLI"
           export PATH="$HOME/.local/bin:$PATH"
-          echo "PATH updated: $PATH"
-          ls $HOME/.local/bin
+          echo "✅ Installed Databricks CLI"
+          echo "PATH: $PATH"
+          ls $HOME/.local/bin || echo "Directory not found"
           which databricks || echo "databricks not found"
           databricks version || echo "version command failed"
-      - name: Confirm Databricks CLI
-        run: |
-          echo "Checking CLI location..."
-          ls ~/.local/bin
-      - name: Locate CLI binary
-        run: |
-          python -m site --user-base
-          find $(python -m site --user-base)/bin -name databricks
-          
+
       - name: Configure Databricks CLI
         run: |
           mkdir -p ~/.databricks
@@ -104,14 +84,13 @@ jobs:
       - name: Build Wheel
         run: python setup.py bdist_wheel
 
-      - name: Debug Python packages
-        run: |
-          pip list | grep databricks
-
       - name: Deploy Bundle
-        run: databricks bundle deploy -t dev_feature
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          databricks bundle deploy -t dev_feature
 
       - name: Run Job
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           databricks bundle run -t dev_feature data_pipeline-rep-smoke-dev-feature-val-v1 \
           --parameters='{"parameters": ["data_pipeline.validation.task.rep_val", "--env", "dev", "--space", "feature", "--object_type", "re", "--job_type", "rep", "--test_type", "smoke"]}'
