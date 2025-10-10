@@ -24,7 +24,6 @@ targets:
           
           tasks:
             - task_key: "rep_dev_feature_validation_task"
-              job_cluster_key: "default_cluster"
               
               python_wheel_task:
                 package_name: "data_pipeline"
@@ -45,11 +44,6 @@ targets:
               libraries:
                 - whl: ./dist/*.whl  # DAB auto-uploads this
           
-          job_clusters:
-            - job_cluster_key: "default_cluster"
-              new_cluster:
-                spark_version: "13.3.x-scala2.12"
-                node_type_id: "Standard_DS3_v2"
-                num_workers: 1
+          # Use serverless compute (no job_clusters needed)
           
           timeout_seconds: 3600
