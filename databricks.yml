@@ -42,7 +42,7 @@ targets:
                   - "smoke"
               
               libraries:
-                - whl: ../dist/*.whl  # DAB auto-uploads this
+                - whl: ./dist/*.whl  # DAB auto-uploads this
           
           # job_clusters:
           #   - job_cluster_key: "default_cluster"
