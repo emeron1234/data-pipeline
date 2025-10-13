@@ -1,4 +1,4 @@
-name: Data Generation Workflow Deployment
+name: DataSet Generation Workflow Deployment
 
 on:
   workflow_dispatch:
