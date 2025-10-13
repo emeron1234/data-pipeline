@@ -77,7 +77,9 @@ DEV_REQUIREMENTS = [
     "jellyfish==1.1.0",
     "soda-core==3.1.0",
     "soda-core-spark_df==3.1.0",
-    "paramiko==2.12.0"
+    "paramiko==2.12.0",
+    "faker",
+    "phonenumbers"
 ]
 
 current_dir = pathlib.Path(__file__).parent.resolve()
