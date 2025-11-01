@@ -33,6 +33,8 @@ targets:
             # Bronze zone processes
             - task_key: "re_dev_feature_task_bronze"
               environment_key: "serverless_env"
+              depends_on:
+                - task_key: "re_dev_feature_task_raw"
               python_wheel_task:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
@@ -47,6 +49,8 @@ targets:
             # Silver zone processes
             - task_key: "re_dev_feature_task_silver"
               environment_key: "serverless_env"
+              depends_on:
+                - task_key: "re_dev_feature_task_bronze"
               python_wheel_task:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
