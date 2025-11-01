@@ -2,6 +2,8 @@ from pyspark.sql import SparkSession
 
 re_bronze_loc = "data_lake_dev.feature_bronze_data.re_transformed_bronze"
 re_silver_loc = "data_lake_dev.feature_silver_data.real_estate"
+ci_bronze_loc = "data_lake_dev.feature_bronze_data.ci_transformed_bronze"
+ci_silver_loc = "data_lake_dev.feature_silver_data.contact_info"
 
 def get_dbutils(spark: SparkSession):
     """Safely retrieves dbutils whether running locally or on a databricks cluster
