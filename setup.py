@@ -37,7 +37,8 @@ PACKAGE_REQUIREMENTS = [
     # GraphFrames depends on PySpark - also excluded for serverless
     # "graphframes==0.6",
     "pymsteams==0.2.3",
-    "paramiko==2.12.0"
+    "paramiko==2.12.0",
+    "phonenumbers"
 ]
 
 DEV_REQUIREMENTS = [
