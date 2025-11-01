@@ -12,6 +12,7 @@ targets:
     
     resources:
       jobs:
+        # Data ETL Pipeline ----------
         data-etl-pipeline:
           name: "real_estate_etl"
           tasks:
@@ -22,7 +23,7 @@ targets:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
                 parameters:
-                  - "data_pipeline.real_estate.task.rep"
+                  - "data_pipeline.real_estate.task.raw.re_extract_data_task"
                   - "--env"
                   - "dev"
                   - "--space"
@@ -43,6 +44,7 @@ targets:
                   - ./dist/*.whl  # Wheel library specified here for serverless
           timeout_seconds: 3600
 
+        # QA Validation Pipeline ----------
         data_pipeline-rep-smoke-dev-feature-val-v1-alt:
           name: "data_pipeline-rep-smoke-dev-feature-val-v1-alt"
           

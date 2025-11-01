@@ -1,11 +1,23 @@
 # %pip install phonenumbers
 
 import phonenumbers
+from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import StringType
 
+# Initialize Spark session
+spark = SparkSession.builder.getOrCreate()
+
 
 def etl_process(**options):
+    """ Transforming Delta Data
+    
+    Data cleanup:
+        - Filter out profiles if both first and middle name is null (Null removal)
+        - Remove special characters
+    Standardization: name, phone number
+    """
+
     # To standardize phone number based on US format
     def us_format_phone(phone):
         try:
@@ -51,4 +63,3 @@ def etl_process(**options):
     re_bronze_loc = "data_lake_dev.feature_bronze_data.re_transformed_bronze"
     spark.sql(f"CREATE TABLE IF NOT EXISTS {re_bronze_loc} USING DELTA")
     std_name.write.format("delta").mode("append").option("mergeSchema", "true").saveAsTable(re_bronze_loc)
-    # std_name.display()
