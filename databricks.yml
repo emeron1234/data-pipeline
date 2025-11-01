@@ -1,7 +1,7 @@
 # Configuration file for **Databricks Asset Bundles (DAB)**, which is the modern approach for deploying and managing Databricks resources
 
 bundle:
-  name: "data_pipeline"
+  name: "data_pipeline_bundle"
 
 targets:
   dev_feature:
