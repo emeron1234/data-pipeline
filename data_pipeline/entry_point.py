@@ -24,6 +24,7 @@ def main():
     # Load the modules to execute the Subparser decorator
     modules = [
         'data_pipeline.real_estate',
+        'data_pipeline.contact_info',
         'data_pipeline.core',
         'data_pipeline.validation'
     ]
