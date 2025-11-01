@@ -30,7 +30,10 @@ def etl_process(**options):
             print("Phone number is invalid")
             return None
 
-    re_raw = spark.read.table("data_lake_dev.feature_raw_data.re_raw")
+    re_raw_table = 'data_lake_dev.feature_raw_data.re_raw'
+    
+    re_raw = spark.read.table(f"{re_raw_table}")
+    print(f"Read data from {re_raw_table}")
 
     # To filter out the rows with NULL values in first_name and last_name
     filter_null_df = re_raw.filter( ~F.expr("first_name IS NULL AND last_name IS NULL") )
@@ -63,3 +66,5 @@ def etl_process(**options):
     re_bronze_loc = "data_lake_dev.feature_bronze_data.re_transformed_bronze"
     spark.sql(f"CREATE TABLE IF NOT EXISTS {re_bronze_loc} USING DELTA")
     std_name.write.format("delta").mode("append").option("mergeSchema", "true").saveAsTable(re_bronze_loc)
+
+    print(f"Successfully load transformed data into {re_bronze_loc}")

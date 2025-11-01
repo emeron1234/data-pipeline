@@ -27,21 +27,35 @@ def build_subparsers(subparsers) -> list[ArgumentParser]:
     parsers: list[ArgumentParser] = []
     parser: ArgumentParser
 
-    object_types = ['ci']
-    job_types = ['cip']
-    test_types = ['smoke', 'regression']
-    zone = ['raw', 'bronze', 'silver']
+    pipelines = ['contact_info']
 
     task = 'data_pipeline.contact_info.task.raw.ci_extract_data_task'
     parser = subparsers.add_parser(task)
     parser.set_defaults(command=task)
     parser.add_argument('-b', '--bucket', help='S3 bucket')
     parser.add_argument('-e', '--env', choices=environments, required=True, help='Environment')
-    parser.add_argument('-p', '--space', choices=spaces, required=True, help='Space')
-    parser.add_argument('-z', '--zone', choices=zone, required=False, help='Zone')
-    parser.add_argument('-o', '--object_type', choices=object_types, required=True, help='Object_Types')
-    parser.add_argument('-j', '--job_type', choices=job_types, required=True, help='Job_Types')
-    parser.add_argument('-t', '--test_type', choices=test_types, required=False, help='Test_Types')
+    parser.add_argument('-s', '--space', choices=spaces, required=True, help='Space')
+    parser.add_argument('-p', '--pipeline', choices=pipelines, required=True, help='Pipeline')
+    parser.add_argument('--config', help='Configuration file')
+    parsers.append(parser)
+
+    task = 'data_pipeline.contact_info.task.bronze.ci_transform_data_task'
+    parser = subparsers.add_parser(task)
+    parser.set_defaults(command=task)
+    parser.add_argument('-b', '--bucket', help='S3 bucket')
+    parser.add_argument('-e', '--env', choices=environments, required=True, help='Environment')
+    parser.add_argument('-s', '--space', choices=spaces, required=True, help='Space')
+    parser.add_argument('-p', '--pipeline', choices=pipelines, required=True, help='Pipeline')
+    parser.add_argument('--config', help='Configuration file')
+    parsers.append(parser)
+
+    task = 'data_pipeline.contact_info.task.silver.ci_load_data_task'
+    parser = subparsers.add_parser(task)
+    parser.set_defaults(command=task)
+    parser.add_argument('-b', '--bucket', help='S3 bucket')
+    parser.add_argument('-e', '--env', choices=environments, required=True, help='Environment')
+    parser.add_argument('-s', '--space', choices=spaces, required=True, help='Space')
+    parser.add_argument('-p', '--pipeline', choices=pipelines, required=True, help='Pipeline')
     parser.add_argument('--config', help='Configuration file')
     parsers.append(parser)
 

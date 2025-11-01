@@ -12,13 +12,13 @@ targets:
     
     resources:
       jobs:
-        # Data ETL Pipeline ----------
+        # Data ETL Pipeline --------------------
         data-etl-pipeline:
           name: "real_estate_etl"
           tasks:
-            - task_key: "re_dev_feature_task"
+            # Raw zone processes
+            - task_key: "re_dev_feature_task_raw"
               environment_key: "serverless_env"
-              
               python_wheel_task:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
@@ -28,13 +28,36 @@ targets:
                   - "dev"
                   - "--space"
                   - "feature"
-                  - "--object_type"
-                  - "re"
-                  - "--job_type"
-                  - "rep"
-                  - "--test_type"
-                  - "smoke"
-          
+                  - "--pipeline"
+                  - "real_estate"
+            # Bronze zone processes
+            - task_key: "re_dev_feature_task_bronze"
+              environment_key: "serverless_env"
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters:
+                  - "data_pipeline.real_estate.task.bronze.re_transform_data_task"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--pipeline"
+                  - "real_estate"
+            # Silver zone processes
+            - task_key: "re_dev_feature_task_silver"
+              environment_key: "serverless_env"
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters:
+                  - "data_pipeline.real_estate.task.silver.re_load_data_task"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--pipeline"
+                  - "real_estate"
           # Serverless environment config (serverless, libraries go in environments.spec.dependencies)
           environments:
             - environment_key: "serverless_env"
@@ -44,10 +67,9 @@ targets:
                   - ./dist/*.whl  # Wheel library specified here for serverless
           timeout_seconds: 3600
 
-        # QA Validation Pipeline ----------
+        # QA Validation Pipeline --------------------
         data_pipeline-rep-smoke-dev-feature-val-v1-alt:
-          name: "data_pipeline-rep-smoke-dev-feature-val-v1-alt"
-          
+          name: "data_pipeline-rep-smoke-dev-feature-val-v1-alt"  
           tasks:
             - task_key: "rep_dev_feature_validation_task"
               environment_key: "serverless_env"
