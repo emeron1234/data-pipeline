@@ -38,7 +38,8 @@ PACKAGE_REQUIREMENTS = [
     # "graphframes==0.6",
     "pymsteams==0.2.3",
     "paramiko==2.12.0",
-    "phonenumbers"
+    "phonenumbers",
+    "faker"
 ]
 
 DEV_REQUIREMENTS = [

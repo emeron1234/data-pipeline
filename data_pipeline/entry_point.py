@@ -25,6 +25,7 @@ def main():
     modules = [
         'data_pipeline.real_estate',
         'data_pipeline.contact_info',
+        'data_pipeline.data_generation',
         'data_pipeline.core',
         'data_pipeline.validation'
     ]
