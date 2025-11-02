@@ -154,9 +154,6 @@ def etl_process(**options):
     ci_exclude_cols = ["property_country", "property_postal_code", "bedrooms", "bathrooms", "area_sqft", "property_pricing", "listed_date", "realtor_name", "realtor_email", "realtor_phone", "agency_name", "contact_source"]
     contact_info_df = data_df.select([col for col in data_df.columns if col not in ci_exclude_cols])
 
-    
-
-    
     # Contact Info data conversion to parquet file
     print("Loading Contact Info data to parquet file...")
     contact_info_df = contact_info_df\
