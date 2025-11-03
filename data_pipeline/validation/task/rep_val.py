@@ -124,6 +124,13 @@ def etl_process(**options):
     job_type = options.get(JOB_TYPE_OPTION)
     test_type = options.get(TEST_TYPE_OPTION)
 
+    zones = ['raw', 'bronze', 'silver']
+    check_types = ['software', 'data_quality']
+
+    qa_config_file = config_file(job_type)
+    config_df = load_config(qa_config_file)
+    get_env = SmokeValidationContext(config_df)
+
     try:
         # Smoke Test run 
         if test_type == 'smoke': 
