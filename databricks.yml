@@ -29,11 +29,60 @@ targets:
                   - "feature"
 
           # Data ETL Pipeline --------------------
-            # Raw zone processes
-            - task_key: "re_dev_feature_task_raw"
+            # Contact Info: Raw zone processes
+            - task_key: "ci_dev_feature_task_raw"
               environment_key: "serverless_env"
               depends_on:
                 - task_key: "data_generation_task"
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters:
+                  - "data_pipeline.contact_info.task.raw.ci_extract_data_task"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--pipeline"
+                  - "contact_info"
+            # Contact Info: Bronze zone processes
+            - task_key: "ci_dev_feature_task_bronze"
+              environment_key: "serverless_env"
+              depends_on:
+                - task_key: "ci_dev_feature_task_raw"
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters:
+                  - "data_pipeline.contact_info.task.bronze.ci_transform_data_task"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--pipeline"
+                  - "contact_info"
+            # Contact Info: Silver zone processes
+            - task_key: "ci_dev_feature_task_silver"
+              environment_key: "serverless_env"
+              depends_on:
+                - task_key: "ci_dev_feature_task_bronze"
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters:
+                  - "data_pipeline.contact_info.task.silver.ci_load_data_task"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--pipeline"
+                  - "contact_info"
+
+            # Real Estate: Raw zone processes
+            - task_key: "re_dev_feature_task_raw"
+              environment_key: "serverless_env"
+              depends_on:
+                - task_key: "ci_dev_feature_task_silver"
               python_wheel_task:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
@@ -45,7 +94,7 @@ targets:
                   - "feature"
                   - "--pipeline"
                   - "real_estate"
-            # Bronze zone processes
+            # Real Estate: Bronze zone processes
             - task_key: "re_dev_feature_task_bronze"
               environment_key: "serverless_env"
               depends_on:
@@ -61,7 +110,7 @@ targets:
                   - "feature"
                   - "--pipeline"
                   - "real_estate"
-            # Silver zone processes
+            # Real Estate: Silver zone processes
             - task_key: "re_dev_feature_task_silver"
               environment_key: "serverless_env"
               depends_on:
@@ -79,10 +128,30 @@ targets:
                   - "real_estate"
 
           # QA Validation Pipeline --------------------
-            - task_key: "rep_dev_feature_validation_task"
+            - task_key: "cip_dev_feature_validation_task"
               environment_key: "serverless_env"
               depends_on:
                 - task_key: "re_dev_feature_task_silver"
+              python_wheel_task:
+                package_name: "data_pipeline"
+                entry_point: "data-pipeline-etl"
+                parameters:
+                  - "data_pipeline.validation.task.cip_val"
+                  - "--env"
+                  - "dev"
+                  - "--space"
+                  - "feature"
+                  - "--object_type"
+                  - "ci"
+                  - "--job_type"
+                  - "cip"
+                  - "--test_type"
+                  - "smoke"
+
+            - task_key: "rep_dev_feature_validation_task"
+              environment_key: "serverless_env"
+              depends_on:
+                - task_key: "cip_dev_feature_validation_task"
               python_wheel_task:
                 package_name: "data_pipeline"
                 entry_point: "data-pipeline-etl"
