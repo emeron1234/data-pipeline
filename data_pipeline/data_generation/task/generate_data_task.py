@@ -158,6 +158,7 @@ def etl_process(**options):
     print("Loading Contact Info data to parquet file...")
     contact_info_df = contact_info_df\
         .select("profile_id", "first_name", "middle_name", "last_name", "personal_address", "phone_personal", "phone_office", "email", "age", "birth_country", "preferred_contact_method", "linkedin_url")
+    # Generate batch ID
     batch_id = batch_ids_processing("dbfs:/Volumes/data_lake_dev/feature_raw_data/contact_info_parquet/")   
     contact_info_df.write.mode("overwrite").parquet(f"dbfs:/Volumes/data_lake_dev/feature_raw_data/contact_info_parquet/{batch_id}")
 
@@ -169,6 +170,7 @@ def etl_process(**options):
     print("Loading Real Estate data to parquet file...")
     real_estate_df = real_estate_df \
         .select("profile_id", "first_name", "middle_name", "last_name", "property_id", "property_type", "property_address", "property_city", "property_state", "property_country", "property_postal_code", "bedrooms", "bathrooms", "area_sqft", "property_pricing", "listed_date", "realtor_name", "realtor_email", "realtor_phone", "agency_name", "contact_source")
+    # Generate batch ID
     batch_id = batch_ids_processing("dbfs:/Volumes/data_lake_dev/feature_raw_data/real_estate_parquet/")
     real_estate_df.write.mode("overwrite").parquet(f"dbfs:/Volumes/data_lake_dev/feature_raw_data/real_estate_parquet/{batch_id}")
 

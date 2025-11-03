@@ -27,15 +27,12 @@ def build_subparsers(subparsers) -> list[ArgumentParser]:
     parsers: list[ArgumentParser] = []
     parser: ArgumentParser
 
-    pipelines = ['real_estate']
-
-    task = 'data_pipeline.data_generation.task.'
+    task = 'data_pipeline.data_generation.task.generate_data_task'
     parser = subparsers.add_parser(task)
     parser.set_defaults(command=task)
     parser.add_argument('-b', '--bucket', help='S3 bucket')
     parser.add_argument('-e', '--env', choices=environments, required=True, help='Environment')
     parser.add_argument('-s', '--space', choices=spaces, required=True, help='Space')
-    parser.add_argument('-p', '--pipeline', choices=pipelines, required=True, help='Pipeline')
     parser.add_argument('--config', help='Configuration file')
     parsers.append(parser)
 
