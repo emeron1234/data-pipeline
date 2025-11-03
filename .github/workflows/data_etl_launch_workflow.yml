@@ -95,7 +95,7 @@ jobs:
       - name: Run Bundle Job
         if: ${{ !inputs.skip_test }}
         run: |
-          databricks bundle run -t ${{ inputs.environment }}_${{ inputs.space }} data-etl-pipeline \
+          databricks bundle run -t ${{ inputs.environment }}_${{ inputs.space }} data-pipeline \
             --python-named-params env=${{ inputs.environment }} \
             --python-named-params space=${{ inputs.space }} \
             --python-named-params object_type=${{ inputs.object_type }} \
