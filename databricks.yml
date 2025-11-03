@@ -15,7 +15,6 @@ targets:
         data-pipeline:
           name: "data_pipeline_master"
           tasks:
-          
           # Dataset Generation --------------------
             - task_key: "data_generation_task"
               environment_key: "serverless_env"

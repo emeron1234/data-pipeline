@@ -43,7 +43,7 @@ def batch_ids_processing(path) -> str:
     matching_folders = [f for f in folder_paths if '2025' in f]
 
     if matching_folders:
-        print("\nFound batches of folders - processing the batch_ids")
+        print("Found batches of folders - processing the batch_ids")
         batch_ids = []
         for folder in matching_folders:
             folder = folder.split("/")
@@ -56,7 +56,7 @@ def batch_ids_processing(path) -> str:
         new_batch = latest_batch + 100
         print(f"Latest batch id: {latest_batch}")
     else:
-        print("\nNo batches of folders found - introducing batch_id: 20250101")
+        print("No batches of folders found - introducing batch_id: 20250101")
         new_batch = 20250101
         print(f"New batch id: {new_batch}")
     return str(new_batch)
@@ -167,11 +167,11 @@ def etl_process(**options):
     real_estate_df = data_df.select([col for col in data_df.columns if col not in re_exclude_cols])
 
     # Real Estate data conversion to parquet file
-    print("Loading Real Estate data to parquet file...")
+    print("\nLoading Real Estate data to parquet file...")
     real_estate_df = real_estate_df \
         .select("profile_id", "first_name", "middle_name", "last_name", "property_id", "property_type", "property_address", "property_city", "property_state", "property_country", "property_postal_code", "bedrooms", "bathrooms", "area_sqft", "property_pricing", "listed_date", "realtor_name", "realtor_email", "realtor_phone", "agency_name", "contact_source")
     # Generate batch ID
     batch_id = batch_ids_processing("dbfs:/Volumes/data_lake_dev/feature_raw_data/real_estate_parquet/")
     real_estate_df.write.mode("overwrite").parquet(f"dbfs:/Volumes/data_lake_dev/feature_raw_data/real_estate_parquet/{batch_id}")
 
-    print("Data loading complete.")
+    print("\nData loading complete.")
