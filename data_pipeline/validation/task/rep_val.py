@@ -12,6 +12,12 @@ from data_pipeline.core.constant import (
     JOB_TYPE_OPTION,
     TEST_TYPE_OPTION
 )    
+from data_pipeline.core.validation.setup_constant import (
+    load_config,
+    load_smoke_config,
+    config_file
+)
+from data_pipeline.core.validation.constant.smoke_validation_context import SmokeValidationContext
 
 
 logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
@@ -130,6 +136,8 @@ def etl_process(**options):
     qa_config_file = config_file(job_type)
     config_df = load_config(qa_config_file)
     get_env = SmokeValidationContext(config_df)
+
+    print(f"get_env: {get_env}")
 
     try:
         # Smoke Test run 
