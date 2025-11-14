@@ -212,7 +212,9 @@ def etl_process(**options):
     elif test_type == 'regression':   
         print("Running regression tests...")
 ```
-
-
+Key Features:
+- ✅ Streamlined CSV-driven test configuration
+- ✅ Hard/soft assertion modes
+- ✅ Automated test report generation
 
 ---
