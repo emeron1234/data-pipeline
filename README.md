@@ -30,7 +30,7 @@ The GitHub Actions workflow automatically:
 
 ---
 
-## 📋 Project Structure
+## 📋 Project File Structure
 
 ```
 data-pipeline/
@@ -43,6 +43,11 @@ data-pipeline/
 ├── databricks.yml              # DAB configuration (MAIN)
 └── setup.py                    # Python package setup
 ```
+
+---
+
+## 🏗️ End-to-End Pipeline Architecture
+
 ```
 ┌────────────────────────────────────────────────────────────────────┐
 │                      DATA ENGINEERING PIPELINE                     │
@@ -67,29 +72,27 @@ data-pipeline/
      │                         🟨 Silver Zone ──────────────────────► │
      │                              │ - Delta Lake tables              │
      │                              │ - Schema evolution               │
-     │                              │ - ACID transactions              │
      │                              │ - Ready for analytics            │
      │                              │                                  │
+     │                              │                                  │
      │                              ▼                                  │
-     │                         🟩 Gold Zone (Planned) ──────────────► │
+     │                         🟩 Gold Zone (Future Planned) ───────► │
      │                                - Aggregations                   │
      │                                - Business metrics               │
      │                                - Feature engineering            │
      │                                                                 │
      └─────────────────────────────────────────────────────────────────┘
-```
+
                     ✅ Validation Layer (Parallel)
                          │
                          ├─► Smoke Tests (Fast)
-                         │   - Schema validation
-                         │   - Row count checks
-                         │   - Critical column checks
-                         │
+                         │   - Business rule validation (YAML-based queries)
+                         │   
                          └─► Regression Tests (Comprehensive)
+                             - Schema validation
+                             - Row count checks
                              - Data comparison
-                             - Business rule validation
-                             - Historical consistency
-
+                             
 ---
 
 ## 🔧 Key Technologies
