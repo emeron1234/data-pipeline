@@ -10,7 +10,7 @@ Engineered a scalable data pipeline processing **Contact Information** and **Rea
 ## 🚀 Quick Start
 
 ### **Project Highlights**
-- **Pipeline Architecture implementation**: Bronze → Silver → Gold
+- **Pipeline Architecture**: Bronze → Silver → Gold
 - **Automated CI/CD pipeline**: using GithHub Action
 - **QA Framework**: Smoke and Regression testing
 - **Modern Deployment**: using Databricks Asset Bundles (DAB)
