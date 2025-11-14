@@ -10,16 +10,11 @@ Engineered a scalable data pipeline processing **Contact Information** and **Rea
 ## 🚀 Quick Start
 
 ### **Project Highlights**
-- Pipeline Architecture implementation
-    - Bronze → Silver → Gold
-- Automated CI/CD pipeline
-    - using GithHub Action
-- QA Framework
-    - Smoke and Regression testing
-- Modern Deployment
-    - using Databricks Asset Bundles (DAB)
-- Data Quality validation
-    - performed at every stage of task run
+- Pipeline Architecture implementation: Bronze → Silver → Gold
+- Automated CI/CD pipeline: using GithHub Action
+- QA Framework: Smoke and Regression testing
+- Modern Deployment: using Databricks Asset Bundles (DAB)
+- Data Quality validation: performed at every stage of task run
 
 ### **CI/CD Deployment**
 The GitHub Actions workflow automatically:
@@ -30,14 +25,16 @@ The GitHub Actions workflow automatically:
 
 ---
 
-## 📋 Project File Structure
+## 📋 Repository File Structure
 
 ```
 data-pipeline/
 ├── .github/workflows/
-│   └── qa_val.yml              # CI/CD workflow (DAB-based)
-├── data_pipeline/              # Application code
+│   └── data_etl.yml            # CI/CD workflow (DAB-based)
+├── data_pipeline/              # Core application code
+│   ├── contact_info/
 │   ├── core/
+│   ├── data_generation/
 │   ├── real_estate/
 │   └── validation/
 ├── databricks.yml              # DAB configuration (MAIN)
@@ -92,15 +89,31 @@ data-pipeline/
                              - Schema validation
                              - Row count checks
                              - Data comparison
+```
                              
 ---
 
-## 🔧 Key Technologies
+## 🔧 Key End-to-End Pipeline
 
-- **Deployment**: Databricks Asset Bundles (DAB)
-- **CI/CD**: GitHub Actions
-- **Language**: Python 3.9+
-- **Build**: setuptools (wheel packages)
-- **Orchestration**: Databricks Workflows
+### ***Data Generation Module***
+Built synthetic test data for development and testing:
+```
+# File: data_pipeline/data_generation/task/generate_data_task.py
+def etl_process(**options):
+    """Generate realistic synthetic data using Faker"""
+    fake = Faker()
+    
+    # Intelligent batch ID management
+    batch_id = batch_ids_processing(path)  # Auto-increments from last batch
+    
+    # Generate records with realistic patterns
+    for i in range(num_rows):
+        data.append({
+            "profile_id": fake.uuid4(),
+            "first_name": random_cases(fake.first_name()),
+            "phone_personal": fake.phone_number(),
+            # ... 20+ fields with realistic data
+        })
+```
 
 ---
