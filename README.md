@@ -2,7 +2,7 @@
 
 The project demonstrates end-to-end expertise in ETL pipeline development, data quality validation and CI/CD automation which, deployed using **Databricks Asset Bundles (DAB)** for modern CI/CD practices.
 
-### **Business Requirement** ###
+#### **Business Requirement**
 Engineered a scalable data pipeline processing **Contact Information** and **Real Estate** datasets through a multi-layer architecture, ensuring data quality, compliance, and production readiness for enterprise analytics.
 
 ---
