@@ -95,9 +95,9 @@ data-pipeline/
 
 ## 🔧 Key End-to-End Pipeline
 
-### ***Data Generation Module***
+### **Data Generation Module**
 Built synthetic test data for development and testing:
-```
+```python
 # File: data_pipeline/data_generation/task/generate_data_task.py
 def etl_process(**options):
     """Generate realistic synthetic data using Faker"""
