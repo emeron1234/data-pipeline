@@ -115,7 +115,7 @@ def etl_process(**options):
             # ... 20+ fields with realistic data
         })
 ```
-Key Features:
+Key features:
 - ✅ Automatic batch versioning
 - ✅ Realistic data patterns with intentional errors
 - ✅ Data quality issues for testing (null, special chars, etc.)
@@ -134,7 +134,7 @@ def etl_process(**options):
     spark.sql(f"CREATE TABLE IF NOT EXISTS {re_raw_loc} USING DELTA")
     re_df.write.format("delta").mode("append").saveAsTable(re_raw_loc)
 ```
-Reasons Raw Layer is Lean:
+Reasons raw layer is lean:
 - ✅ Faster downstream iteration (as Bronze handle heavy processes)
 - ✅ Simplifies reprocessing (rerun Bronze/Silver without re-extract)
 
@@ -167,7 +167,7 @@ def etl_process(**options):
         F.lower(F.concat_ws(" ", "first_name", "middle_name", "last_name"))
     )
 ```
-Transformations Applied:
+Transformations applied:
 - ✅ NULL handling
 - ✅ Regex-based special characters removal
 - ✅ Phone number standardization
@@ -185,7 +185,7 @@ def etl_process(**options):
         .option("mergeSchema", "true")\
         .saveAsTable(ci_silver_loc)
 ```
-Delta Lake Benefits:
+Delta lake benefits:
 - ✅ Data versioning and time travel capabilities
 - ✅ Data reliability and consistency (prevent data corruption & allow rollbacks)
 
@@ -212,7 +212,7 @@ def etl_process(**options):
     elif test_type == 'regression':   
         print("Running regression tests...")
 ```
-Key Features:
+Key features:
 - ✅ Streamlined CSV-driven test configuration
 - ✅ Hard/soft assertion modes
 - ✅ Automated test report generation
